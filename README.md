@@ -1,4 +1,4 @@
-# TSIS Deep-Dive — 3-Lane Agent Evaluation
+# TSIS Agent Evaluation — Multi-Model Benchmark + Failure Taxonomy Study
 
 Course project for **TSIS (Topici Speciale în Inginerie Software)**, FMI Master IS, 2026-2027.
 
