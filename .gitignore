@@ -1,0 +1,65 @@
+# Deny everything by default, then whitelist deliverables below
+*
+
+# ── Top-level deliverables ──
+!DECISION.md
+!INTEGRITY.md
+!AI_USAGE.md
+!README.md
+!.gitignore
+
+# ── Corpus: docs + scripts (not bulk data) ──
+!corpus/
+!corpus/CORPUS.md
+!corpus/CROSS_TAXONOMY.md
+!corpus/cross_taxonomy_join.py
+!corpus/build_corpus.py
+
+# ── tau2-bench: reports, scripts, POC domain ──
+!tau2-bench/
+!tau2-bench/RESULTS.md
+!tau2-bench/research-sota.md
+!tau2-bench/SMOKE.md
+!tau2-bench/UPSTREAM_DOCS_ERRATA.md
+!tau2-bench/ISSUE_DRAFT.md
+!tau2-bench/verify.py
+!tau2-bench/verify_fullrun.py
+!tau2-bench/verify_fullrun_v1_2026-10-19.py
+!tau2-bench/sweep.py
+!tau2-bench/sweep2.py
+!tau2-bench/probe_grok_xhigh.py
+!tau2-bench/summarize.py
+!tau2-bench/summarize2.py
+!tau2-bench/analyze_failures*.py
+!tau2-bench/pilot_second_model.py
+!tau2-bench/pilot_report.py
+!tau2-bench/poc/
+
+# ── trail: reports, scripts ──
+!trail/
+!trail/RESULTS.md
+!trail/research-sota.md
+!trail/sensitivity.md
+!trail/verify.py
+!trail/verify_fullrun.py
+!trail/fullrun_gold.py
+!trail/fullrun_corpus.py
+!trail/fullrun_corpus2.py
+!trail/fullrun_corpus_multi.py
+!trail/fullrun_score.py
+!trail/fullrun_dashboard.py
+!trail/fullrun_summarize.py
+!trail/fullrun_summarize2.py
+!trail/grok_recovery.py
+
+# ── mastscope: reports, scripts ──
+!mastscope/
+!mastscope/RESULTS.md
+!mastscope/research-sota.md
+!mastscope/verify.py
+!mastscope/verify_fullrun.py
+!mastscope/fullrun/
+!mastscope/fullrun/adamast_comparison.md
+
+# ── audit ──
+!_audit/
