@@ -419,7 +419,9 @@ def main():
     ):
         _c2, _p, _dof, exp = stats.chi2_contingency(table)
         chi2_cr, p_cr, dof_cr = (
-            float(cast(float, _c2)), float(cast(float, _p)), float(cast(float, _dof))
+            float(cast(float, _c2)),
+            float(cast(float, _p)),
+            float(cast(float, _dof)),
         )
         cramers_v = math.sqrt(chi2_cr / (n_cr * (min(3, 3) - 1)))
 
