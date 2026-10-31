@@ -1,5 +1,7 @@
 # TSIS Agent Evaluation — Multi-Model Benchmark + Failure Taxonomy Study
 
+![tsis-ci](https://github.com/Prekzursil/tsis-agent-evaluation/actions/workflows/ci.yml/badge.svg) ![quality](https://github.com/Prekzursil/tsis-agent-evaluation/actions/workflows/quality.yml/badge.svg) ![CodeQL](https://github.com/Prekzursil/tsis-agent-evaluation/actions/workflows/codeql.yml/badge.svg)
+
 Course project for **TSIS (Topici Speciale în Inginerie Software)**, FMI Master IS, 2026-2027.
 
 ## Three evaluation lanes, one decision
