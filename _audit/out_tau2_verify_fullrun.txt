@@ -1,0 +1,57 @@
+FAIL results-domains-present -- ['airline', 'ecommerce_poc', 'mock', 'retail', 'telecom', 'telecom-workflow']
+PASS results-parse[airline] -- 200 sims
+PASS results-parse[ecommerce_poc] -- 52 sims
+PASS results-parse[mock] -- 40 sims
+PASS results-parse[retail] -- 456 sims
+PASS results-parse[telecom] -- 456 sims
+PASS results-parse[telecom-workflow] -- 86 sims
+PASS summary-present[airline]
+PASS mean-reconciles[airline] -- summary=0.89 raw=0.89
+PASS passk-reconciles[airline] -- summary={'k=1': 0.89, 'k=2': 0.8733, 'k=3': 0.865, 'k=4': 0.86} recomputed={'k=1': 0.89, 'k=2': 0.8733, 'k=3': 0.865, 'k=4': 0.86}
+PASS counts-reconcile[airline] -- 200/200 sims 50/50 tasks
+PASS unique-task-trial[airline] -- 200 pairs
+PASS trials-contiguous[airline] -- kmax=4
+PASS sim-fields[airline]
+PASS checkpoint-index[airline] -- 0 index entries vs 200 sims
+PASS summary-present[ecommerce_poc]
+PASS mean-reconciles[ecommerce_poc] -- summary=0.9423 raw=0.9423
+PASS passk-reconciles[ecommerce_poc] -- summary={'k=1': 0.9423, 'k=2': 0.8974, 'k=3': 0.8654, 'k=4': 0.8462} recomputed={'k=1': 0.9423, 'k=2': 0.8974, 'k=3': 0.8654, 'k=4': 0.8462}
+PASS counts-reconcile[ecommerce_poc] -- 52/52 sims 13/13 tasks
+PASS unique-task-trial[ecommerce_poc] -- 52 pairs
+PASS trials-contiguous[ecommerce_poc] -- kmax=4
+PASS sim-fields[ecommerce_poc]
+PASS checkpoint-index[ecommerce_poc] -- 0 index entries vs 52 sims
+PASS summary-present[mock]
+PASS mean-reconciles[mock] -- summary=0.725 raw=0.725
+PASS passk-reconciles[mock] -- summary={'k=1': 0.725, 'k=2': 0.6667, 'k=3': 0.625, 'k=4': 0.6} recomputed={'k=1': 0.725, 'k=2': 0.6667, 'k=3': 0.625, 'k=4': 0.6}
+PASS counts-reconcile[mock] -- 40/40 sims 10/10 tasks
+PASS unique-task-trial[mock] -- 40 pairs
+PASS trials-contiguous[mock] -- kmax=4
+PASS sim-fields[mock]
+PASS checkpoint-index[mock] -- 0 index entries vs 40 sims
+PASS summary-present[retail]
+PASS mean-reconciles[retail] -- summary=0.8706 raw=0.8706
+PASS passk-reconciles[retail] -- summary={'k=1': 0.8706, 'k=2': 0.8056, 'k=3': 0.7632, 'k=4': 0.7281} recomputed={'k=1': 0.8706, 'k=2': 0.8056, 'k=3': 0.7632, 'k=4': 0.7281}
+PASS counts-reconcile[retail] -- 456/456 sims 114/114 tasks
+PASS unique-task-trial[retail] -- 456 pairs
+PASS trials-contiguous[retail] -- kmax=4
+PASS sim-fields[retail]
+PASS checkpoint-index[retail] -- 0 index entries vs 456 sims
+PASS summary-present[telecom]
+FAIL mean-reconciles[telecom] -- summary=0.0 raw=0.8662
+FAIL passk-reconciles[telecom] -- summary={} recomputed={'k=1': 0.8662, 'k=2': 0.7558, 'k=3': 0.6623, 'k=4': 0.5789}
+FAIL counts-reconcile[telecom] -- 0/456 sims 0/114 tasks
+PASS unique-task-trial[telecom] -- 456 pairs
+PASS trials-contiguous[telecom] -- kmax=4
+FAIL sim-fields[telecom]
+PASS checkpoint-index[telecom] -- 0 index entries vs 456 sims
+FAIL summary-present[telecom-workflow]
+PASS unique-task-trial[telecom-workflow] -- 86 pairs
+PASS trials-contiguous[telecom-workflow] -- kmax=1
+FAIL sim-fields[telecom-workflow]
+PASS checkpoint-index[telecom-workflow] -- 0 index entries vs 86 sims
+FAIL results-md-table-reconciles -- RESULTS.md not found
+PASS custom-domain-offline-suite -- exit=0
+FAIL usage-files-present -- missing=['telecom-workflow']
+
+VERIFY FAILED -- 9 failed: ['results-domains-present', 'mean-reconciles[telecom]', 'passk-reconciles[telecom]', 'counts-reconcile[telecom]', 'sim-fields[telecom]', 'summary-present[telecom-workflow]', 'sim-fields[telecom-workflow]', 'results-md-table-reconciles', 'usage-files-present']

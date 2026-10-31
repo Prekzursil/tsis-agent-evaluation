@@ -1,0 +1,377 @@
+{
+  "store_date": "2026-10-18",
+  "users": {
+    "cust_8841": {
+      "user_id": "cust_8841",
+      "name": "Elena Fischer",
+      "email": "elena.fischer@example.com"
+    },
+    "cust_2207": {
+      "user_id": "cust_2207",
+      "name": "Marco Bianchi",
+      "email": "marco.bianchi@example.com"
+    },
+    "cust_3312": {
+      "user_id": "cust_3312",
+      "name": "Priya Sharma",
+      "email": "priya.sharma@example.com"
+    },
+    "cust_4470": {
+      "user_id": "cust_4470",
+      "name": "Tom Novak",
+      "email": "tom.novak@example.com"
+    },
+    "cust_5591": {
+      "user_id": "cust_5591",
+      "name": "Aisha Khan",
+      "email": "aisha.khan@example.com"
+    },
+    "cust_6628": {
+      "user_id": "cust_6628",
+      "name": "Lucas Meyer",
+      "email": "lucas.meyer@example.com"
+    },
+    "cust_7715": {
+      "user_id": "cust_7715",
+      "name": "Nina Petrova",
+      "email": "nina.petrova@example.com"
+    }
+  },
+  "orders": {
+    "#AO-1001": {
+      "order_id": "#AO-1001",
+      "user_id": "cust_8841",
+      "status": "delivered",
+      "items": [
+        {
+          "item_id": "it_1001_1",
+          "product_id": "SKU-TRK-42",
+          "product_name": "Trail Runner 2.0 Shoes",
+          "price": 129.0,
+          "quantity": 1,
+          "final_sale": false
+        },
+        {
+          "item_id": "it_1001_2",
+          "product_id": "SKU-SCK-01",
+          "product_name": "Merino Hiking Socks (2-pack)",
+          "price": 18.5,
+          "quantity": 2,
+          "final_sale": true
+        }
+      ],
+      "payment_method_id": "pm_visa_4482",
+      "delivered_on": "2026-10-08",
+      "shipping_method": "standard",
+      "shipping_fee": 0.0,
+      "ship_to": "Lindenweg 8, 30159 Hannover, Germany",
+      "coupon_code": null,
+      "discount": 0.0,
+      "invoice_issued": false,
+      "invoice_vat_id": null
+    },
+    "#AO-1002": {
+      "order_id": "#AO-1002",
+      "user_id": "cust_2207",
+      "status": "delivered",
+      "items": [
+        {
+          "item_id": "it_1002_1",
+          "product_id": "SKU-JKT-77",
+          "product_name": "Alpine Hardshell Jacket",
+          "price": 249.0,
+          "quantity": 1,
+          "final_sale": false
+        }
+      ],
+      "payment_method_id": "pm_mc_9931",
+      "delivered_on": "2026-10-02",
+      "shipping_method": "standard",
+      "shipping_fee": 0.0,
+      "ship_to": "Via Roma 21, 20121 Milano, Italy",
+      "coupon_code": null,
+      "discount": 0.0,
+      "invoice_issued": false,
+      "invoice_vat_id": null
+    },
+    "#AO-1003": {
+      "order_id": "#AO-1003",
+      "user_id": "cust_3312",
+      "status": "delivered",
+      "items": [
+        {
+          "item_id": "it_1003_1",
+          "product_id": "SKU-TNT-09",
+          "product_name": "Alpine Dome Tent 2P",
+          "price": 310.0,
+          "quantity": 1,
+          "final_sale": false
+        }
+      ],
+      "payment_method_id": "pm_ax_1177",
+      "delivered_on": "2026-10-10",
+      "shipping_method": "standard",
+      "shipping_fee": 0.0,
+      "ship_to": "45 Lakeview Drive, Bristol BS1 4TR, United Kingdom",
+      "coupon_code": null,
+      "discount": 0.0,
+      "invoice_issued": false,
+      "invoice_vat_id": null
+    },
+    "#AO-1004": {
+      "order_id": "#AO-1004",
+      "user_id": "cust_4470",
+      "status": "delivered",
+      "items": [
+        {
+          "item_id": "it_1004_1",
+          "product_id": "SKU-BTS-55",
+          "product_name": "Ridgeline Hiking Boots",
+          "price": 189.0,
+          "quantity": 1,
+          "final_sale": false
+        }
+      ],
+      "payment_method_id": "pm_visa_8103",
+      "delivered_on": "2026-09-02",
+      "shipping_method": "standard",
+      "shipping_fee": 0.0,
+      "ship_to": "Kralova 14, 11000 Praha, Czechia",
+      "coupon_code": null,
+      "discount": 0.0,
+      "invoice_issued": false,
+      "invoice_vat_id": null
+    },
+    "#AO-1005": {
+      "order_id": "#AO-1005",
+      "user_id": "cust_5591",
+      "status": "processing",
+      "items": [
+        {
+          "item_id": "it_1005_1",
+          "product_id": "SKU-CMP-33",
+          "product_name": "Steel Crampons",
+          "price": 145.0,
+          "quantity": 1,
+          "final_sale": false
+        }
+      ],
+      "payment_method_id": "pm_mc_2250",
+      "delivered_on": null,
+      "shipping_method": "standard",
+      "shipping_fee": 0.0,
+      "ship_to": "Hauptstrasse 12, 60311 Frankfurt, Germany",
+      "coupon_code": null,
+      "discount": 0.0,
+      "invoice_issued": false,
+      "invoice_vat_id": null
+    },
+    "#AO-1006": {
+      "order_id": "#AO-1006",
+      "user_id": "cust_6628",
+      "status": "processing",
+      "items": [
+        {
+          "item_id": "it_1006_1",
+          "product_id": "SKU-BAG-88",
+          "product_name": "Featherlight 40L Backpack",
+          "price": 165.0,
+          "quantity": 1,
+          "final_sale": false
+        }
+      ],
+      "payment_method_id": "pm_pp_0091",
+      "delivered_on": null,
+      "shipping_method": "standard",
+      "shipping_fee": 0.0,
+      "ship_to": "Bahnhofplatz 3, 8001 Zuerich, Switzerland",
+      "coupon_code": null,
+      "discount": 0.0,
+      "invoice_issued": false,
+      "invoice_vat_id": null
+    },
+    "#AO-1007": {
+      "order_id": "#AO-1007",
+      "user_id": "cust_7715",
+      "status": "delivered",
+      "items": [
+        {
+          "item_id": "it_1007_1",
+          "product_id": "SKU-SLP-19",
+          "product_name": "Subzero Sleeping Bag",
+          "price": 220.0,
+          "quantity": 1,
+          "final_sale": false
+        }
+      ],
+      "payment_method_id": "pm_visa_6620",
+      "delivered_on": "2026-10-13",
+      "shipping_method": "express",
+      "shipping_fee": 12.9,
+      "ship_to": "Tsarigradsko Shose 115, 1784 Sofia, Bulgaria",
+      "coupon_code": null,
+      "discount": 0.0,
+      "invoice_issued": false,
+      "invoice_vat_id": null
+    },
+    "#AO-1008": {
+      "order_id": "#AO-1008",
+      "user_id": "cust_8841",
+      "status": "processing",
+      "items": [
+        {
+          "item_id": "it_1008_1",
+          "product_id": "SKU-HLD-02",
+          "product_name": "Glacier Headlamp",
+          "price": 89.0,
+          "quantity": 1,
+          "final_sale": false
+        }
+      ],
+      "payment_method_id": "pm_visa_4482",
+      "delivered_on": null,
+      "shipping_method": "standard",
+      "shipping_fee": 0.0,
+      "ship_to": "Lindenweg 8, 30159 Hannover, Germany",
+      "coupon_code": null,
+      "discount": 0.0,
+      "invoice_issued": false,
+      "invoice_vat_id": null
+    },
+    "#AO-1009": {
+      "order_id": "#AO-1009",
+      "user_id": "cust_2207",
+      "status": "delivered",
+      "items": [
+        {
+          "item_id": "it_1009_1",
+          "product_id": "SKU-GLV-70",
+          "product_name": "Summit Windstopper Gloves",
+          "price": 95.0,
+          "quantity": 1,
+          "final_sale": false
+        }
+      ],
+      "payment_method_id": "pm_mc_9931",
+      "delivered_on": "2026-10-11",
+      "shipping_method": "standard",
+      "shipping_fee": 0.0,
+      "ship_to": "Via Roma 21, 20121 Milano, Italy",
+      "coupon_code": null,
+      "discount": 0.0,
+      "invoice_issued": false,
+      "invoice_vat_id": null
+    },
+    "#AO-1010": {
+      "order_id": "#AO-1010",
+      "user_id": "cust_6628",
+      "status": "delivered",
+      "items": [
+        {
+          "item_id": "it_1010_1",
+          "product_id": "SKU-BTL-06",
+          "product_name": "Trailflow Water Bottle 1L",
+          "price": 39.0,
+          "quantity": 1,
+          "final_sale": false
+        }
+      ],
+      "payment_method_id": "pm_pp_0091",
+      "delivered_on": "2026-10-14",
+      "shipping_method": "standard",
+      "shipping_fee": 0.0,
+      "ship_to": "Bahnhofplatz 3, 8001 Zuerich, Switzerland",
+      "coupon_code": null,
+      "discount": 0.0,
+      "invoice_issued": false,
+      "invoice_vat_id": null
+    },
+    "#AO-1011": {
+      "order_id": "#AO-1011",
+      "user_id": "cust_5591",
+      "status": "delivered",
+      "items": [
+        {
+          "item_id": "it_1011_1",
+          "product_id": "SKU-PCK-24",
+          "product_name": "Alpine 65L Expedition Pack",
+          "price": 260.0,
+          "quantity": 1,
+          "final_sale": false
+        }
+      ],
+      "payment_method_id": "pm_mc_2250",
+      "delivered_on": "2026-10-06",
+      "shipping_method": "standard",
+      "shipping_fee": 0.0,
+      "ship_to": "Hauptstrasse 12, 60311 Frankfurt, Germany",
+      "coupon_code": null,
+      "discount": 0.0,
+      "invoice_issued": false,
+      "invoice_vat_id": null
+    },
+    "#AO-1012": {
+      "order_id": "#AO-1012",
+      "user_id": "cust_2207",
+      "status": "delivered",
+      "items": [
+        {
+          "item_id": "it_1012_1",
+          "product_id": "SKU-POL-15",
+          "product_name": "Carbon Trekking Poles",
+          "price": 175.0,
+          "quantity": 1,
+          "final_sale": false
+        }
+      ],
+      "payment_method_id": "pm_mc_9931",
+      "delivered_on": "2026-10-15",
+      "shipping_method": "standard",
+      "shipping_fee": 0.0,
+      "ship_to": "Via Roma 21, 20121 Milano, Italy",
+      "coupon_code": null,
+      "discount": 0.0,
+      "invoice_issued": false,
+      "invoice_vat_id": null
+    }
+  },
+  "refunds": {},
+  "coupons": {
+    "WELCOME10": {
+      "code": "WELCOME10",
+      "discount_type": "percent",
+      "value": 10.0,
+      "min_subtotal": 50.0,
+      "expires_on": "2026-12-31",
+      "one_per_customer": true,
+      "used_by": []
+    },
+    "SAVE25": {
+      "code": "SAVE25",
+      "discount_type": "fixed",
+      "value": 25.0,
+      "min_subtotal": 150.0,
+      "expires_on": "2026-09-30",
+      "one_per_customer": true,
+      "used_by": []
+    },
+    "GEAR15": {
+      "code": "GEAR15",
+      "discount_type": "percent",
+      "value": 15.0,
+      "min_subtotal": 200.0,
+      "expires_on": "2026-12-31",
+      "one_per_customer": true,
+      "used_by": []
+    },
+    "LOYALTY30": {
+      "code": "LOYALTY30",
+      "discount_type": "fixed",
+      "value": 30.0,
+      "min_subtotal": 100.0,
+      "expires_on": "2026-12-31",
+      "one_per_customer": true,
+      "used_by": ["cust_5591"]
+    }
+  }
+}

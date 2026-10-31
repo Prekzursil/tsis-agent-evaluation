@@ -1,0 +1,47 @@
+{
+  "active_user_id": null,
+  "profiles": {
+    "cust_8841": {
+      "email": "elena.fischer@example.com",
+      "vat_id": null,
+      "address": null,
+      "coupon_codes": []
+    },
+    "cust_2207": {
+      "email": "marco.bianchi@example.com",
+      "vat_id": "IT1234567",
+      "address": null,
+      "coupon_codes": []
+    },
+    "cust_3312": {
+      "email": "priya.sharma@example.com",
+      "vat_id": null,
+      "address": null,
+      "coupon_codes": ["WELCOME10"]
+    },
+    "cust_4470": {
+      "email": "tom.novak@example.com",
+      "vat_id": null,
+      "address": null,
+      "coupon_codes": []
+    },
+    "cust_5591": {
+      "email": "aisha.khan@example.com",
+      "vat_id": null,
+      "address": "Hauptstrasse 12, 60311 Frankfurt, Germany",
+      "coupon_codes": ["LOYALTY30"]
+    },
+    "cust_6628": {
+      "email": "lucas.meyer@example.com",
+      "vat_id": null,
+      "address": null,
+      "coupon_codes": []
+    },
+    "cust_7715": {
+      "email": "nina.petrova@example.com",
+      "vat_id": null,
+      "address": null,
+      "coupon_codes": []
+    }
+  }
+}

@@ -1,0 +1,33 @@
+FAIL gold outputs GAIA count == 117 (32)
+FAIL gold outputs SWE count == 31 (0)
+PASS no error-marker outputs remain ([])
+PASS all gold outputs parse as JSON ([])
+FAIL repo metrics file GAIA-metrics.txt exists
+FAIL repo metrics file SWE Bench-metrics.txt exists
+FAIL gold_agreement.json exists
+PASS corpus2 label checkpoints exist (297)
+PASS no duplicate-sha label files ([])
+PASS every label sha is a canonical sha (0 orphans)
+PASS PRIVACY: no evidence/description/content/path keys in label files ([])
+wrote C:\Users\PREKZU~1\AppData\Local\Temp\tmp4dpx_dic\summary.json
+labels: 297 | ok: 64 | error labels: 177
+top categories: [('Instruction Non-compliance', 41), ('Formatting Errors', 24), ('Goal Deviation', 21), ('Context Handling Failures', 19), ('Language-only', 17), ('tool-related (fabricating tool outputs/capabilities)', 14), ('Task Orchestration', 10), ('Incorrect Problem Identification', 7)]
+privacy violations: 0
+FAIL summary label_files reconciles
+FAIL summary total_error_labels reconciles (177 vs 12)
+FAIL summary category_counts reconciles
+FAIL summary impact_counts reconciles
+FAIL summary status_counts reconciles
+FAIL summary usage reconciles
+FAIL summary per_runtime_traces reconciles
+FAIL summary manifest inheritance reconciles ({'records': 124327, 'records_labelled': 510, 'records_inheriting_ok_annotation': 113, 'labelled_sha_mean_path_multiplicity': 1.7171717171717171} vs {'records': 124327, 'records_labelled': 165, 'records_inheriting_ok_annotation': 11, 'labelled_sha_mean_path_multiplicity': 1.7553191489361701})
+FAIL corpus2 usage ledger per-sha consistent with labels (labels_with_usage=67 ledger_rows=71 orphans=0 mismatched=4)
+PASS summary privacy_violation_count == 0
+FAIL manifest inheritance count matches summary (113)
+PASS dashboard embeds total error labels
+PASS dashboard embeds label file count
+PASS dashboard embeds top category name (Instruction Non-compliance)
+FAIL RESULTS.md carries corpus label count
+PASS RESULTS.md carries annotated-OK count (ok=7)
+
+16 CHECK(S) FAILED: ['gold outputs GAIA count == 117', 'gold outputs SWE count == 31', 'repo metrics file GAIA-metrics.txt exists', 'repo metrics file SWE Bench-metrics.txt exists', 'gold_agreement.json exists', 'summary label_files reconciles', 'summary total_error_labels reconciles', 'summary category_counts reconciles', 'summary impact_counts reconciles', 'summary status_counts reconciles', 'summary usage reconciles', 'summary per_runtime_traces reconciles', 'summary manifest inheritance reconciles', 'corpus2 usage ledger per-sha consistent with labels', 'manifest inheritance count matches summary', 'RESULTS.md carries corpus label count']

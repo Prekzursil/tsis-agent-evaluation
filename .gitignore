@@ -34,6 +34,10 @@
 !tau2-bench/pilot_second_model.py
 !tau2-bench/pilot_report.py
 !tau2-bench/poc/
+!tau2-bench/poc/**
+# … but never bytecode caches
+tau2-bench/poc/__pycache__/
+tau2-bench/poc/*/__pycache__/
 
 # ── trail: reports, scripts ──
 !trail/
@@ -59,7 +63,45 @@
 !mastscope/verify.py
 !mastscope/verify_fullrun.py
 !mastscope/fullrun/
+!mastscope/fullrun/*.py
+!mastscope/fullrun/adamast/*.py
 !mastscope/fullrun/adamast_comparison.md
+# labels/data under mastscope/fullrun stay untracked (190MB lane state)
 
 # ── audit ──
 !_audit/
+!_audit/**
+_audit/**/__pycache__/
+
+# ── QZP onboarding: governance + tests + meta ──
+!.github/
+!.github/**
+!pyproject.toml
+!LICENSE
+!SECURITY.md
+!CONTRIBUTING.md
+!codecov.yml
+!.gitleaks.toml
+!tests/
+!tests/**
+
+# ── lane scripts referenced by the committed reports ──
+!tau2-bench/summarize_grok.py
+!tau2-bench/repair_grok_gaps.py
+!tau2-bench/diag_mock_tasks.py
+!trail/fullrun_gold_nv.py
+!trail/fullrun_batchb_grok.py
+!trail/fullrun_batchb_summary.py
+!trail/fullrun_sensitivity_d.py
+!trail/fullrun_finish_shard.py
+!trail/fullrun_results_md.py
+!trail/fullrun_hier_judge.py
+!trail/fullrun_hier_score.py
+!trail/fullrun_hier_flatctl.py
+!trail/_hier_chunk_stats.py
+!trail/_hier_design_check.py
+!mastscope/fullrun/_find_leaks.py
+
+# ── never: lane internals, keys, results data ──
+# (provider-claims.json, work/, .venv, repo/ upstream clone, results dirs,
+#  annotation/try_env_keys.py stay untracked by the blanket '*' rule above)

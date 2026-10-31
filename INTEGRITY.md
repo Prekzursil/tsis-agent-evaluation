@@ -1,3 +1,268 @@
+# INTEGRITY — audit of all produced artifacts (2026-10-30 session)
+
+Auditor: results-integrity subagent ("Results integrity auditor"), 2026-10-30 ≈22:00–23:30.
+Every check below was executed this session with system Python 3.14.6. Audit scripts are
+preserved in `_audit/audit_20261030/` (and `_audit/audit_20261030/recheck_new_root.py`
+re-proves every core check at the final path). Verifier outputs cited below were captured
+at `/tmp/{mast,tau2,trail}_*.log` during the run.
+
+> **MIGRATION NOTICE (read first).** Mid-audit — between 22:45 and 23:00 on 2026-10-30 —
+> another agent migrated the entire project from `tsis/deepdive/` to
+> `tsis/agent-evaluation/` (a second hop; the 2026-10-18 tree lived at `tss/tsis-deepdive/`).
+> All findings below were first established at `tsis/deepdive/` and then **re-run against
+> `tsis/agent-evaluation/`** with identical results (receipt: `recheck_new_root.py` output,
+> quoted per section). The one casualty of the migration (a stale venv path) was repaired
+> and is documented in §3. The prior `tsis/deepdive/` path is now an empty skeleton with a
+> pointer to this file.
+
+---
+
+## Scoreboard
+
+| lane | data artifacts | verify.py | verify_fullrun.py |
+|---|---|---|---|
+| corpus | **PASS** (all checks) | not run — no verify.py exists in corpus/ | not run — none exists |
+| mastscope | **PASS** (v1 aggregate stale, superseded) | **PASS** exit 0 (36 checks) | **PASS** exit 0 (43 checks) |
+| tau2-bench | **PASS** (all 4 results dirs) | **FAIL** exit 1 (34/43 — v1 POC drift, §3) | **PASS** exit 0 (176/176, after venv-path repair §3) |
+| trail | **PASS with 1 quarantine** (§4) | **PASS** exit 0 | **FAIL** exit 1 (46/54 — batch-B sweep incomplete, §4) |
+
+Unresolved failures (nothing faked, nothing deleted): the 8 trail batch-B failures
+(incomplete sweep + stale derived summary/RESULTS/agreement + missing `sensitivity_d.json`)
+and tau2's v1 `verify.py` POC-expectation drift. Details in §3/§4 and §6.
+
+---
+
+## 1. `corpus/` — VERDICT: PASS (all checks; re-proven at final path)
+
+Run: `python -X utf8 _audit/audit_20261030/recheck_new_root.py` (full re-parse of the
+73,315,396-byte manifest at `tsis/agent-evaluation/corpus/manifest.jsonl`):
+
+```
+[corpus] manifest lines=124327 (==124327: True) parse_fail=0 sha_missing=0 ends_nl=True
+[corpus] statuses={'ok': 122733, 'missing': 1594} unique_ok=41877 (==41877: True)
+[corpus] annotation_set==unique_ok: True; unique_files field=41877
+[corpus] dedup groups=35589==decl 35589: True; members=116445==decl 116445: True
+[corpus] spot-check 10 at new path: 10/10 PASS
+```
+
+- **Every line parses**: 124,327/124,327 (0 failures; file ends with newline).
+- **Total = 124,327** exactly (122,733 `ok` + 1,594 `missing`), matching CORPUS.md's
+  "manifest records **124,327** (122,733 ok + 1,594 missing, never dropped)".
+- **sha256 present on every record** (0 missing; full 18-key schema on all records —
+  key-frequency census in `_audit/audit_20261030/corpus_audit.py` output).
+- **Unique hashes**: 41,877 over `ok` records; `canonical_set.json` `annotation_set`
+  (41,877 entries) is **set-equal** to the ok-unique hashes; CORPUS.md's "41,877" matches.
+  Same documented nuance as 2026-10-18: 41,878 unique hashes over ALL records — the single
+  extra hash lives only on `missing` records and is deliberately retained by CORPUS.md §4.
+  Annotation `size` fields match manifest sizes on all 41,877 (0 mismatches).
+- **dedup_index.json internally consistent**: 35,589 groups == declared `duplicate_hashes`;
+  116,445 member paths == declared `duplicate_files`; 0 foreign paths, 0 wrong-hash paths,
+  0 non-ok members, 0 groups with <2 members (`_audit/audit_20261030/corpus_audit5.py`).
+- **Spot-check 10 random manifest entries** (seed 20261030): **10/10 path exists AND
+  on-disk size == manifest size** (mix of C:/D:, live/backup/orphan sources; receipts in
+  `_audit/audit_20261030/corpus_spot.py` output).
+- corpus has no verify.py (shared input lane) — recorded as **not run**, per prior audit.
+
+## 2. `mastscope/fullrun/` — VERDICT: PASS
+
+Run: `_audit/audit_20261030/mast_audit*.py` + `recheck_new_root.py`, at
+`tsis/agent-evaluation/mastscope/fullrun/`:
+
+```
+[mastscope] labels.jsonl: lines=16253 (==16253: True) parse_fail=0 dup_ids=0 ends_nl=True
+[mastscope] labels_full.jsonl: lines=33889 (==33889: True) parse_fail=0 dup_ids=0 ends_nl=True
+[mastscope] aggregates2 reconcile: n_labeled_ok=32540==32540: True; n_parse_fail=1349==1349: True; targets=33889==33889: True; pending=0
+```
+
+- **labels.jsonl (v1): exactly 16,253 lines**, 0 parse failures, **0 duplicate trace_ids**
+  (the last-wins resume-overwrite case never arises), 14-key MAST-14 mode schema
+  (`1.1`–`3.3`) on every record with 0 schema deviations, single model `glm-5.3-flash`,
+  ok=15,532 / parse_fail=721.
+- **labels_full.jsonl (v2): 33,889 lines** = 100 % of `targets.jsonl`, 0 parse failures,
+  0 duplicate target_ids, ok=32,540 / parse_fail=1,349, 13,194 `migrated_from` v1; every
+  label's sha256 matches its target record (0 mismatches); label IDs == target IDs exactly.
+- **aggregates2.json fully reconciles** with labels_full.jsonl: all scalars (targets 33,889,
+  n_labeled_ok 32,540, n_parse_fail 1,349, pending 0, traces_with_any_mode 21,205,
+  total_yes 52,034, migrated 13,194) AND all 14 per-mode `yes` counts AND the
+  task_completed distribution `{no 9,830, null 11,501, yes 11,209}` / 34.45 %.
+- **aggregates.json (v1) is STALE** (`n_labeled_ok=1,920` vs labels.jsonl's 15,532 ok;
+  all 14 mode counts stale). It is the superseded v1-sweep aggregate — regenerated numbers
+  must come from re-running `aggregate.py`, never by editing. v2 (`aggregates2.json`) is
+  current and authoritative.
+- **All checkpoint/aux files parse**: `sweep_status.json`, `sweep_status2.json`,
+  `sweep2_status_history.jsonl` (3 lines), `fallback_pending.json`, `targets_summary.json`,
+  `crosscheck_agreement.json`, `crosscheck2_agreement.json`, `privacy_scan_full2.json`,
+  `manifest_index.json` (124,327 entries), and JSONLs `census.jsonl` 19,267,
+  `crosscheck.jsonl` 50, `crosscheck2.jsonl` 50, `crosscheck_mini.jsonl` 4,
+  `privacy_partial.jsonl` 122,733, `scan_skipped_results.jsonl` 2,271,
+  `labels_smoke.jsonl` 25, `smoke2.jsonl` 3, `targets_partial.jsonl` 41,877 — 0 parse
+  failures anywhere. The files the 2026-10-18 audit listed as missing
+  (`crosscheck2.jsonl`, `crosscheck2_agreement.json`, `privacy_scan_full2.json`) now exist.
+- verify.py **PASS exit 0 (36 checks)**; verify_fullrun.py **PASS exit 0 (43 checks)**
+  — the 30 failures of 2026-10-18 are all resolved.
+  (Prior audit's `labels.mode_schema (2172 bad)` no longer applies: the completed v2 sweep
+  re-annotated everything; pending=0.)
+
+## 3. `tau2-bench/` — VERDICT: results PASS everywhere; one migration casualty repaired
+
+Checked every results dir produced by the sweeps (`sweep.py` → `results/`,
+`sweep2.py` → `results_v2/`, the grok variant → `results_v2_grok/`, plus
+`results_secondmodel/`). Receipts: `_audit/audit_20261030/tau2_audit*.py` and
+`recheck_new_root.py` (`[tau2] all results.json parse at new path; total sims across 4
+dirs=5495; dup(task,trial)=0 everywhere: PASS`).
+
+| dir | domains (sims) | state |
+|---|---|---|
+| `results/` (GLM-5.3, sweep.py) | airline 200, banking_knowledge 388, ecommerce2 56, ecommerce_poc 52, mock 40, retail 456, telecom 456, telecom-workflow 456 | complete: 4 trials × tasks everywhere, 0 dup (task,trial), trials contiguous, `summary.json` present |
+| `results_v2_grok/` (grok-4.7) | airline 200, banking 388, ecommerce3 56, mock 40, retail 456, telecom 456, telecom-workflow 456, **intake 800** = 2,852 | complete, same invariants; `summary.json` + `RESULTS_section_draft.md` present |
+| `results_v2/` (GLM v2, partial) | airline 71, banking 52, ecommerce3 56, mock 40, retail 111, telecom 76 | interrupted but **resumable**: 0 dups, trials contiguous; no summary.json (never summarized) |
+| `results_secondmodel/` (pilot) | airline 77, ecommerce2 56 | partial pilot, resumable, no summary.json |
+
+- **Every results JSON parses** — including `usage_*.json` in all dirs and the experiment
+  dir `results_v2_grok/mock_allinfra_ledgerstorm_20261028/results.json`.
+- **summary.json ↔ results.json reconcile in both complete dirs**: n_sims exact on all 16
+  domain entries; mean_reward matches the summarizer's formula (`round(sum/len,4)`,
+  `summarize_grok.py:61`) on every domain (`_audit/audit_20261030/tau2_audit3.py` →
+  `ALL DOMAINS RECONCILE (n_sims + mean_reward at 4dp): True` for both dirs). The earlier
+  `reward_info=None` infrastructure-error sims flagged on 2026-10-18 are gone (repair
+  scripts `results/repair_*_infra*.log` re-ran them; 0 None-reward sims remain).
+- **Checkpoints resumable**: per-domain `results.json` is the harness's own auto-resume
+  checkpoint (sweep.py docstring, lines 14–18); (task,trial) unique and trials contiguous
+  in all 4 dirs, so any partial dir can resume without collision.
+- `results_v2_grok/sweep_status.json` contains a historical `"mock": "failed: ValueError:
+  Tasks were modified…"` string — a mid-run checkpoint note; mock itself is complete
+  (40 sims, reconciles). Left as-is (checkpoint history, not data).
+- **Migration casualty repaired (tooling, not data)**: mid-audit the tree moved to
+  `tsis/agent-evaluation/`, and the repo junction `tss/tsis-deepdive` (which the venv's
+  editable install pointed through) was removed. Symptom:
+  `repo/.venv/Scripts/python.exe poc/load_ecommerce3.py` → `ModuleNotFoundError: No module
+  named 'tau2'` because `repo/.venv/Lib/site-packages/_editable_impl_tau2.pth` still
+  contained `…\tss\tsis-deepdive\tau2-bench\repo\src`. **Repair**: rewrote that one line to
+  `C:\Users\Prekzursil\.zcode\workspace\default\tsis\agent-evaluation\tau2-bench\repo\src`.
+  After the repair: `poc/load_ecommerce3.py` → `ALL PASS (67/67 checks)`, and
+  **verify_fullrun.py → exit 0, 176 PASS / 0 FAIL** (`VERIFY OK -- all checks passed`;
+  the lane's own pre-migration receipt `results_v2_grok/verify_fullrun_output.txt`
+  2026-10-30 04:28 already showed VERIFY OK, confirming the migration — not the lane —
+  broke it). No numbers touched.
+- verify.py (v1) **FAIL exit 1, 34/43** — all 9 failures are the documented v1-verifier
+  drift (pinned to the original 2-task POC; the POC legitimately grew to 14 tasks
+  `coupon_task_1…lost_task_1`) plus its harness-side subprocess (`KeyError: 'SAVE10'`)
+  and a Windows artifact: `git status` in `repo/` shows ` D
+  web/leaderboard/public/task-data/domains` because upstream tracks it as a symlink that
+  Windows materialises as a directory. None of these are data corruption; the
+  authoritative custom-domain suite (`poc/load_ecommerce3.py`, 67/67) is green and
+  verify_fullrun.py passes. Recorded as unresolved-but-explained, per the 2026-10-18
+  audit's identical finding.
+
+## 4. `trail/` (checkpoint layout: `trail/work/fullrun/`) — VERDICT: checkpoints PASS; 1 file quarantined; batch B incomplete
+
+Receipts: `_audit/audit_20261030/trail_audit.py`, `trail_gold.py`, `trail_resume.py`,
+`recheck_new_root.py`, all re-run at `tsis/agent-evaluation/trail/work/fullrun/`.
+
+- **gold_meta.jsonl** (glm-5.3): 106 records, 0 parse failures; 71 unique files, 15
+  retried; **last-wins resume verified coherent**: disk holds exactly the 33 files whose
+  LAST attempt is `ok` (exact set match); last-attempt errors: 38 `ProviderSaturated`
+  (glm run incomplete by provider outage — superseded, see next bullet).
+- **gold_meta_nv.jsonl** (nvidia/nemotron-3-ultra-550b-a55b): 296 records, 0 parse
+  failures; 148 unique files, every one retried, **all 148 last attempts ok**; disk holds
+  GAIA 116 + SWE Bench 31 = 147 files that ALL parse, plus the 1 quarantined file below →
+  **exactly the 148 last-ok set** (exact set match incl. quarantine).
+- **QUARANTINED (the audit's only quarantine):**
+  `gold_outputs/nvidia-nemotron-3-ultra/GAIA/41bbc898aa7de0f31d2382ff57700a76.json`
+  → moved intact to `trail/work/fullrun/_quarantine/nvidia-nemotron-3-ultra_GAIA/` with
+  sidecar `…json.sidecar.md`. Reason: not valid JSON — five `"description"` string values
+  written unquoted (lines 7/14/21/28/35) plus embedded control characters
+  (`json.loads` → `Expecting value at line 7 column 28`); not a truncation, so no
+  line-drop repair applied, and no bytes were edited. **Downstream impact: none** —
+  `gold_agreement.json`'s per_file record scores this target against the **glm-5.3**
+  output, and `union-top/GAIA/…` (which parses) is the glm-5.3 version per
+  `union-top/MODEL_MANIFEST.json`. Regenerate by re-running the single nv gold target
+  (gold_meta_nv.jsonl line 174 records a successful attempt) — do not hand-patch quotes.
+- **gold outputs**: glm GAIA 33/33 parse; nv GAIA 116/116 parse post-quarantine; SWE 31/31
+  parse; `union-top` GAIA 117 + SWE 31 all parse; `GAIA-metrics.txt`, `SWE
+  Bench-metrics.txt`, `MODEL_MANIFEST.json`, `gold_agreement.json` (148/148 files
+  processed, wF1 0.36825) all present and parse. The 2026-10-18 gold gaps are closed.
+- **corpus2_labels (batch A)**: **40,798/40,798 COMPLETE** — every file parses, 0 duplicate
+  sha256, 0 orphans (all ∈ canonical annotation_set), 0 error markers;
+  `corpus2_summary.json` is **current** (label_files 40,798 == disk).
+- **corpus2_labels_b (batch B, grok-4.7)**: **38,874/40,798 INCOMPLETE — sweep died
+  tonight** (fleet watcher last logged `labels_b=38591/40798` at 21:23 after
+  `fleet query failed: TimeoutError`; supervisor last cycle 21:06; no lane process alive
+  at 22:05). All 38,874 files parse, 0 dups, 0 orphans, B ⊂ A — **cleanly resumable,
+  1,924 targets remaining**. Derived artifacts are stale as a direct consequence:
+  `batchb_summary.json` (files_checkpointed 5,152; annotated_ok 1,106 vs raw ok=21,504),
+  `batchb_agreement.json` (overlap 86 vs raw 188), `RESULTS.md` batch-B markers,
+  and `sensitivity_d.json` was never generated.
+- Other checkpoints parse: `corpus2_jobs.json` (canonical_total 41,877 → supported
+  40,798), `corpus2_census.json`, `queue_state.json` (stale snapshot from the superseded
+  Oct-20 finish-queue era, harmless), `FINISH_PIDS.json`, `wave3_wait_state.json`,
+  usage ledgers (`corpus2.jsonl` 27,696 / `corpus2_b.jsonl` 9,357 / `gold.jsonl` 39 /
+  `gold_nv.jsonl` 148 — 0 parse failures).
+- verify.py **PASS exit 0** ("RESULT: ALL CHECKS PASSED"). verify_fullrun.py **FAIL
+  exit 1 — 46 PASS / 8 FAIL**, all eight being the incomplete batch-B set above:
+  `batch B label files == canonical set size (38,874 vs canon 40,798)`, `batch B summary
+  files_checkpointed matches raw (5,152 vs 38,874)`, `batch B summary annotated_ok matches
+  raw (1,106 vs raw ok=21,504)`, `batch B summary statuses match raw`, `RESULTS.md carries
+  batch B checkpointed count`, `RESULTS.md carries batch B annotated-OK count`,
+  `agreement overlap count matches raw labels (raw=188 json=86)`, `sensitivity_d.json
+  exists` (×2). These must be fixed by finishing the sweep and re-running the lane's own
+  summarize/agreement steps — never by editing numbers.
+
+## 5. Repairs / quarantine performed (this session)
+
+1. **Quarantined** `trail/work/fullrun/gold_outputs/nvidia-nemotron-3-ultra/GAIA/
+   41bbc898aa7de0f31d2382ff57700a76.json` (invalid JSON, unquoted values — §4) with a
+   full sidecar note. Nothing deleted; no valid data touched; no numbers edited.
+2. **Repaired venv path** `tau2-bench/repo/.venv/Lib/site-packages/_editable_impl_tau2.pth`
+   (dead `tss\tsis-deepdive\…` path → current `tsis\agent-evaluation\…` path) after the
+   mid-audit migration broke it. Tooling config only; tau2's `verify_fullrun.py` went
+   175→176 PASS / 1→0 FAIL after this repair.
+3. **Dropped lines: none.** No truncated final line was found anywhere — every JSONL
+   audited ends with `\n` and parses 100 %.
+4. Junk 0-byte Windows redirection artifacts still present, left in place (harmless):
+   `nul` (root), `tau2-bench/nul`, `trail/NUL`.
+
+## 6. What resuming agents must know
+
+1. **The tree now lives at `tsis/agent-evaluation/`** (git present; old `tsis/deepdive/`
+   is an empty skeleton with a pointer). If anything still references absolute paths from
+   `tss/tsis-deepdive/` or `tsis/deepdive/`, it is dead — the venv `.pth` above was one
+   such case; grep for others before resuming sweeps.
+2. **trail batch B is mid-flight**: 38,874/40,798 labels done (grok-4.7, reasoning_effort
+   low), watcher dead since ~21:23. Resume `fullrun_batchb_grok.py`, then re-run
+   `batchb_summary.py` + the agreement step and generate `sensitivity_d.json`; update the
+   batch-B markers in RESULTS.md. Do NOT trust `batchb_summary.json` /
+   `batchb_agreement.json` as-is (5,152/86-era snapshots).
+3. **trail glm gold run** stopped at 33/117 GAIA (38 ProviderSaturated on last attempt);
+   it is superseded by the nv+union gold set (148/148 agreement complete), so resuming it
+   is optional. The quarantined nv file is regenerated by re-running its single target.
+4. **tau2-bench**: `results/` and `results_v2_grok/` are complete and reconciled;
+   `results_v2/` and `results_secondmodel/` are partial-but-resumable (decide whether to
+   finish or archive). The v1 `verify.py` will keep failing on POC expectations — use
+   `verify_fullrun.py` (176/176) as the gate.
+5. **mastscope** is fully landed (pending=0, aggregates2 current); only the v1
+   `aggregates.json` is a stale historical snapshot — do not cite it.
+6. **corpus** is healthy and closed: 124,327 records / 41,877 canonical hashes, dedup
+   index and canonical set fully consistent.
+
+## 7. verify.py scoreboard (this auditor's runs, at final path)
+
+| lane | verify.py | verify_fullrun.py |
+|---|---|---|
+| corpus | not run (none exists) | not run (none exists) |
+| mastscope | **PASS** (exit 0, 36 checks) | **PASS** (exit 0, 43 checks) |
+| tau2-bench | **FAIL** (exit 1, 34/43 — v1 POC drift + Windows symlink artifact) | **PASS** (exit 0, 176/176 — after `.pth` migration repair) |
+| trail | **PASS** (exit 0) | **FAIL** (exit 1, 46/54 — batch-B incompleteness, §4) |
+
+---
+---
+
+# PRIOR AUDIT (2026-10-18) — preserved unchanged below for the historical record
+
+*(That audit ran against the tree at `tss/tsis-deepdive/`; paths below are historical.
+Its "what resuming agents must know" items have since been completed except where §6
+above says otherwise.)*
+
 # INTEGRITY — audit of all produced artifacts under `tss/tsis-deepdive/`
 
 Auditor: results-integrity subagent, 2026-10-18. Every check below was executed this

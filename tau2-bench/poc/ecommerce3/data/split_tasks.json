@@ -1,0 +1,34 @@
+{
+  "base": [
+    "coupon_task_1",
+    "vat_task_1",
+    "coupon_task_2",
+    "coupon_task_3",
+    "return_task_1",
+    "return_task_2",
+    "return_task_3",
+    "vat_task_2",
+    "vat_task_3",
+    "shipping_task_1",
+    "shipping_task_2",
+    "shipping_task_3",
+    "cancel_task_1",
+    "lost_task_1"
+  ],
+  "test": [
+    "coupon_task_1",
+    "vat_task_1",
+    "coupon_task_2",
+    "coupon_task_3",
+    "return_task_1",
+    "return_task_2",
+    "return_task_3",
+    "vat_task_2",
+    "vat_task_3",
+    "shipping_task_1",
+    "shipping_task_2",
+    "shipping_task_3",
+    "cancel_task_1",
+    "lost_task_1"
+  ]
+}

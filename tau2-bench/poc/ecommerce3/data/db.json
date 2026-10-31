@@ -1,0 +1,683 @@
+{
+  "customers": {
+    "CUST-1001": {
+      "customer_id": "CUST-1001",
+      "name": "Anna Meier",
+      "email": "anna.meier@example.com",
+      "country": "DE",
+      "vat_id": null
+    },
+    "CUST-2002": {
+      "customer_id": "CUST-2002",
+      "name": "Bruno Schulz",
+      "email": "b.schulz@example-firma.de",
+      "country": "DE",
+      "vat_id": null
+    },
+    "CUST-3003": {
+      "customer_id": "CUST-3003",
+      "name": "Chloe Bernard",
+      "email": "chloe.bernard@example.fr",
+      "country": "FR",
+      "vat_id": null
+    },
+    "CUST-4004": {
+      "customer_id": "CUST-4004",
+      "name": "Marco Rossi",
+      "email": "marco.rossi@example.it",
+      "country": "IT",
+      "vat_id": null
+    },
+    "CUST-5005": {
+      "customer_id": "CUST-5005",
+      "name": "Elena Fischer",
+      "email": "elena.fischer@example.com",
+      "country": "DE",
+      "vat_id": null
+    },
+    "CUST-6006": {
+      "customer_id": "CUST-6006",
+      "name": "Farid Haddad",
+      "email": "farid.haddad@example.com",
+      "country": "DE",
+      "vat_id": null
+    },
+    "CUST-7007": {
+      "customer_id": "CUST-7007",
+      "name": "Greta Lindqvist",
+      "email": "greta.lindqvist@example.nl",
+      "country": "NL",
+      "vat_id": null
+    },
+    "CUST-8008": {
+      "customer_id": "CUST-8008",
+      "name": "Peter Novak",
+      "email": "peter.novak@example.de",
+      "country": "DE",
+      "vat_id": null
+    },
+    "CUST-9009": {
+      "customer_id": "CUST-9009",
+      "name": "Sofia Conti",
+      "email": "sofia.conti@example.it",
+      "country": "IT",
+      "vat_id": null
+    },
+    "CUST-11011": {
+      "customer_id": "CUST-11011",
+      "name": "Liam Weber",
+      "email": "liam.weber@example.de",
+      "country": "DE",
+      "vat_id": null
+    },
+    "CUST-12012": {
+      "customer_id": "CUST-12012",
+      "name": "Nadia Petrou",
+      "email": "nadia.petrou@example.nl",
+      "country": "NL",
+      "vat_id": null
+    },
+    "CUST-13013": {
+      "customer_id": "CUST-13013",
+      "name": "Tom Becker",
+      "email": "tom.becker@example.de",
+      "country": "DE",
+      "vat_id": null
+    }
+  },
+  "coupons": {
+    "WELCOME10": {
+      "code": "WELCOME10",
+      "discount_type": "percent",
+      "value": 10.0,
+      "min_order_value": 50.0,
+      "expires_on": "2027-12-31"
+    },
+    "SPRING5": {
+      "code": "SPRING5",
+      "discount_type": "fixed",
+      "value": 5.0,
+      "min_order_value": 20.0,
+      "expires_on": "2027-06-30"
+    },
+    "SAVE20": {
+      "code": "SAVE20",
+      "discount_type": "percent",
+      "value": 20.0,
+      "min_order_value": 100.0,
+      "expires_on": "2026-09-30"
+    }
+  },
+  "orders": {
+    "#ORD-1001": {
+      "order_id": "#ORD-1001",
+      "customer_id": "CUST-1001",
+      "status": "pending",
+      "items": [
+        {
+          "item_id": "it_1001_1",
+          "product_id": "SKU-441",
+          "name": "Wireless mouse",
+          "quantity": 2,
+          "unit_price": 29.9,
+          "final_sale": false
+        },
+        {
+          "item_id": "it_1001_2",
+          "product_id": "SKU-907",
+          "name": "USB-C cable 2m",
+          "quantity": 1,
+          "unit_price": 9.95,
+          "final_sale": false
+        }
+      ],
+      "subtotal": 69.75,
+      "coupon_code": null,
+      "discount": 0.0,
+      "shipping_method": "standard",
+      "shipping_cost": 0.0,
+      "total": 69.75,
+      "shipping_address": {
+        "street": "Lindenstrasse 8",
+        "city": "Koeln",
+        "postal_code": "50667",
+        "country": "DE"
+      },
+      "delivered_on": null,
+      "payment_method": "credit_card",
+      "returned_items": [],
+      "refund_total": 0.0,
+      "invoice": {
+        "invoice_id": null,
+        "vat_id": null,
+        "vat_rate": null,
+        "net_amount": null,
+        "vat_amount": null,
+        "gross_amount": null
+      }
+    },
+    "#ORD-2002": {
+      "order_id": "#ORD-2002",
+      "customer_id": "CUST-2002",
+      "status": "delivered",
+      "items": [
+        {
+          "item_id": "it_2002_1",
+          "product_id": "SKU-118",
+          "name": "Office chair",
+          "quantity": 1,
+          "unit_price": 189.0,
+          "final_sale": false
+        }
+      ],
+      "subtotal": 189.0,
+      "coupon_code": null,
+      "discount": 0.0,
+      "shipping_method": "standard",
+      "shipping_cost": 0.0,
+      "total": 189.0,
+      "shipping_address": {
+        "street": "Industriestrasse 22",
+        "city": "Stuttgart",
+        "postal_code": "70565",
+        "country": "DE"
+      },
+      "delivered_on": "2026-10-02",
+      "payment_method": "sepa",
+      "returned_items": [],
+      "refund_total": 0.0,
+      "invoice": {
+        "invoice_id": "INV-2002",
+        "vat_id": null,
+        "vat_rate": 0.19,
+        "net_amount": 158.82,
+        "vat_amount": 30.18,
+        "gross_amount": 189.0
+      }
+    },
+    "#ORD-3003": {
+      "order_id": "#ORD-3003",
+      "customer_id": "CUST-3003",
+      "status": "delivered",
+      "items": [
+        {
+          "item_id": "it_3003_1",
+          "product_id": "SKU-660",
+          "name": "Silk scarf",
+          "quantity": 2,
+          "unit_price": 120.0,
+          "final_sale": false
+        }
+      ],
+      "subtotal": 240.0,
+      "coupon_code": null,
+      "discount": 0.0,
+      "shipping_method": "standard",
+      "shipping_cost": 0.0,
+      "total": 240.0,
+      "shipping_address": {
+        "street": "12 Rue de la Paix",
+        "city": "Paris",
+        "postal_code": "75002",
+        "country": "FR"
+      },
+      "delivered_on": "2026-10-04",
+      "payment_method": "credit_card",
+      "returned_items": [],
+      "refund_total": 0.0,
+      "invoice": {
+        "invoice_id": "INV-3003",
+        "vat_id": null,
+        "vat_rate": 0.19,
+        "net_amount": 201.68,
+        "vat_amount": 38.32,
+        "gross_amount": 240.0
+      }
+    },
+    "#ORD-4004": {
+      "order_id": "#ORD-4004",
+      "customer_id": "CUST-4004",
+      "status": "pending",
+      "items": [
+        {
+          "item_id": "it_4004_1",
+          "product_id": "SKU-220",
+          "name": "Mechanical keyboard",
+          "quantity": 1,
+          "unit_price": 84.9,
+          "final_sale": false
+        }
+      ],
+      "subtotal": 84.9,
+      "coupon_code": null,
+      "discount": 0.0,
+      "shipping_method": "standard",
+      "shipping_cost": 0.0,
+      "total": 84.9,
+      "shipping_address": {
+        "street": "Via Roma 45",
+        "city": "Torino",
+        "postal_code": "10121",
+        "country": "IT"
+      },
+      "delivered_on": null,
+      "payment_method": "credit_card",
+      "returned_items": [],
+      "refund_total": 0.0,
+      "invoice": {
+        "invoice_id": null,
+        "vat_id": null,
+        "vat_rate": null,
+        "net_amount": null,
+        "vat_amount": null,
+        "gross_amount": null
+      }
+    },
+    "#ORD-4005": {
+      "order_id": "#ORD-4005",
+      "customer_id": "CUST-4004",
+      "status": "delivered",
+      "items": [
+        {
+          "item_id": "it_4005_1",
+          "product_id": "SKU-330",
+          "name": "27-inch monitor",
+          "quantity": 1,
+          "unit_price": 149.9,
+          "final_sale": false
+        }
+      ],
+      "subtotal": 149.9,
+      "coupon_code": null,
+      "discount": 0.0,
+      "shipping_method": "standard",
+      "shipping_cost": 0.0,
+      "total": 149.9,
+      "shipping_address": {
+        "street": "Via Roma 45",
+        "city": "Torino",
+        "postal_code": "10121",
+        "country": "IT"
+      },
+      "delivered_on": "2026-09-25",
+      "payment_method": "credit_card",
+      "returned_items": [],
+      "refund_total": 0.0,
+      "invoice": {
+        "invoice_id": "INV-4005",
+        "vat_id": null,
+        "vat_rate": 0.22,
+        "net_amount": 122.87,
+        "vat_amount": 27.03,
+        "gross_amount": 149.9
+      }
+    },
+    "#ORD-5005": {
+      "order_id": "#ORD-5005",
+      "customer_id": "CUST-5005",
+      "status": "delivered",
+      "items": [
+        {
+          "item_id": "it_5005_1",
+          "product_id": "SKU-701",
+          "name": "Trail Runner 2.0 Shoes",
+          "quantity": 1,
+          "unit_price": 129.0,
+          "final_sale": false
+        },
+        {
+          "item_id": "it_5005_2",
+          "product_id": "SKU-702",
+          "name": "Merino Hiking Socks",
+          "quantity": 2,
+          "unit_price": 12.45,
+          "final_sale": true
+        }
+      ],
+      "subtotal": 153.9,
+      "coupon_code": null,
+      "discount": 0.0,
+      "shipping_method": "standard",
+      "shipping_cost": 0.0,
+      "total": 153.9,
+      "shipping_address": {
+        "street": "Bergweg 3",
+        "city": "Freiburg",
+        "postal_code": "79098",
+        "country": "DE"
+      },
+      "delivered_on": "2026-10-08",
+      "payment_method": "credit_card",
+      "returned_items": [],
+      "refund_total": 0.0,
+      "invoice": {
+        "invoice_id": "INV-5005",
+        "vat_id": null,
+        "vat_rate": 0.19,
+        "net_amount": 129.33,
+        "vat_amount": 24.57,
+        "gross_amount": 153.9
+      }
+    },
+    "#ORD-5010": {
+      "order_id": "#ORD-5010",
+      "customer_id": "CUST-5005",
+      "status": "pending",
+      "items": [
+        {
+          "item_id": "it_5010_1",
+          "product_id": "SKU-910",
+          "name": "USB-C hub 7-in-1",
+          "quantity": 1,
+          "unit_price": 15.9,
+          "final_sale": false
+        }
+      ],
+      "subtotal": 15.9,
+      "coupon_code": null,
+      "discount": 0.0,
+      "shipping_method": "standard",
+      "shipping_cost": 0.0,
+      "total": 15.9,
+      "shipping_address": {
+        "street": "Bergweg 3",
+        "city": "Freiburg",
+        "postal_code": "79098",
+        "country": "DE"
+      },
+      "delivered_on": null,
+      "payment_method": "paypal",
+      "returned_items": [],
+      "refund_total": 0.0,
+      "invoice": {
+        "invoice_id": null,
+        "vat_id": null,
+        "vat_rate": null,
+        "net_amount": null,
+        "vat_amount": null,
+        "gross_amount": null
+      }
+    },
+    "#ORD-6006": {
+      "order_id": "#ORD-6006",
+      "customer_id": "CUST-6006",
+      "status": "delivered",
+      "items": [
+        {
+          "item_id": "it_6006_1",
+          "product_id": "SKU-515",
+          "name": "Hiking backpack 45L",
+          "quantity": 1,
+          "unit_price": 119.0,
+          "final_sale": false
+        }
+      ],
+      "subtotal": 119.0,
+      "coupon_code": null,
+      "discount": 0.0,
+      "shipping_method": "standard",
+      "shipping_cost": 0.0,
+      "total": 119.0,
+      "shipping_address": {
+        "street": "Hafenstrasse 17",
+        "city": "Hamburg",
+        "postal_code": "20359",
+        "country": "DE"
+      },
+      "delivered_on": "2026-08-30",
+      "payment_method": "credit_card",
+      "returned_items": [],
+      "refund_total": 0.0,
+      "invoice": {
+        "invoice_id": "INV-6006",
+        "vat_id": null,
+        "vat_rate": 0.19,
+        "net_amount": 100.0,
+        "vat_amount": 19.0,
+        "gross_amount": 119.0
+      }
+    },
+    "#ORD-7007": {
+      "order_id": "#ORD-7007",
+      "customer_id": "CUST-7007",
+      "status": "delivered",
+      "items": [
+        {
+          "item_id": "it_7007_1",
+          "product_id": "SKU-880",
+          "name": "Wireless headphones",
+          "quantity": 1,
+          "unit_price": 95.0,
+          "final_sale": false
+        },
+        {
+          "item_id": "it_7007_2",
+          "product_id": "SKU-881",
+          "name": "Phone case",
+          "quantity": 1,
+          "unit_price": 19.95,
+          "final_sale": false
+        }
+      ],
+      "subtotal": 114.95,
+      "coupon_code": null,
+      "discount": 0.0,
+      "shipping_method": "standard",
+      "shipping_cost": 0.0,
+      "total": 114.95,
+      "shipping_address": {
+        "street": "Keizersgracht 101",
+        "city": "Amsterdam",
+        "postal_code": "1015",
+        "country": "NL"
+      },
+      "delivered_on": "2026-10-05",
+      "payment_method": "paypal",
+      "returned_items": [],
+      "refund_total": 0.0,
+      "invoice": {
+        "invoice_id": "INV-7007",
+        "vat_id": null,
+        "vat_rate": 0.21,
+        "net_amount": 95.0,
+        "vat_amount": 19.95,
+        "gross_amount": 114.95
+      }
+    },
+    "#ORD-8008": {
+      "order_id": "#ORD-8008",
+      "customer_id": "CUST-8008",
+      "status": "pending",
+      "items": [
+        {
+          "item_id": "it_8008_1",
+          "product_id": "SKU-250",
+          "name": "Desk lamp LED",
+          "quantity": 1,
+          "unit_price": 58.3,
+          "final_sale": false
+        }
+      ],
+      "subtotal": 58.3,
+      "coupon_code": null,
+      "discount": 0.0,
+      "shipping_method": "standard",
+      "shipping_cost": 0.0,
+      "total": 58.3,
+      "shipping_address": {
+        "street": "Torstrasse 55",
+        "city": "Berlin",
+        "postal_code": "10119",
+        "country": "DE"
+      },
+      "delivered_on": null,
+      "payment_method": "credit_card",
+      "returned_items": [],
+      "refund_total": 0.0,
+      "invoice": {
+        "invoice_id": null,
+        "vat_id": null,
+        "vat_rate": null,
+        "net_amount": null,
+        "vat_amount": null,
+        "gross_amount": null
+      }
+    },
+    "#ORD-9009": {
+      "order_id": "#ORD-9009",
+      "customer_id": "CUST-9009",
+      "status": "pending",
+      "items": [
+        {
+          "item_id": "it_9009_1",
+          "product_id": "SKU-340",
+          "name": "Espresso grinder",
+          "quantity": 1,
+          "unit_price": 155.4,
+          "final_sale": false
+        }
+      ],
+      "subtotal": 155.4,
+      "coupon_code": null,
+      "discount": 0.0,
+      "shipping_method": "standard",
+      "shipping_cost": 0.0,
+      "total": 155.4,
+      "shipping_address": {
+        "street": "Corso Buenos Aires 9",
+        "city": "Milano",
+        "postal_code": "20124",
+        "country": "IT"
+      },
+      "delivered_on": null,
+      "payment_method": "credit_card",
+      "returned_items": [],
+      "refund_total": 0.0,
+      "invoice": {
+        "invoice_id": null,
+        "vat_id": null,
+        "vat_rate": null,
+        "net_amount": null,
+        "vat_amount": null,
+        "gross_amount": null
+      }
+    },
+    "#ORD-11011": {
+      "order_id": "#ORD-11011",
+      "customer_id": "CUST-11011",
+      "status": "shipped",
+      "items": [
+        {
+          "item_id": "it_11011_1",
+          "product_id": "SKU-870",
+          "name": "Studio headphones",
+          "quantity": 1,
+          "unit_price": 73.8,
+          "final_sale": false
+        }
+      ],
+      "subtotal": 73.8,
+      "coupon_code": null,
+      "discount": 0.0,
+      "shipping_method": "express",
+      "shipping_cost": 9.9,
+      "total": 83.7,
+      "shipping_address": {
+        "street": "Gartenstrasse 12",
+        "city": "Leipzig",
+        "postal_code": "04103",
+        "country": "DE"
+      },
+      "delivered_on": null,
+      "payment_method": "credit_card",
+      "returned_items": [],
+      "refund_total": 0.0,
+      "invoice": {
+        "invoice_id": null,
+        "vat_id": null,
+        "vat_rate": null,
+        "net_amount": null,
+        "vat_amount": null,
+        "gross_amount": null
+      }
+    },
+    "#ORD-12012": {
+      "order_id": "#ORD-12012",
+      "customer_id": "CUST-12012",
+      "status": "pending",
+      "items": [
+        {
+          "item_id": "it_12012_1",
+          "product_id": "SKU-450",
+          "name": "Yoga mat premium",
+          "quantity": 1,
+          "unit_price": 41.85,
+          "final_sale": false
+        }
+      ],
+      "subtotal": 41.85,
+      "coupon_code": null,
+      "discount": 0.0,
+      "shipping_method": "standard",
+      "shipping_cost": 0.0,
+      "total": 41.85,
+      "shipping_address": {
+        "street": "Prinsengracht 220",
+        "city": "Amsterdam",
+        "postal_code": "1016",
+        "country": "NL"
+      },
+      "delivered_on": null,
+      "payment_method": "credit_card",
+      "returned_items": [],
+      "refund_total": 0.0,
+      "invoice": {
+        "invoice_id": null,
+        "vat_id": null,
+        "vat_rate": null,
+        "net_amount": null,
+        "vat_amount": null,
+        "gross_amount": null
+      }
+    },
+    "#ORD-13013": {
+      "order_id": "#ORD-13013",
+      "customer_id": "CUST-13013",
+      "status": "shipped",
+      "items": [
+        {
+          "item_id": "it_13013_1",
+          "product_id": "SKU-990",
+          "name": "Ceramic mug set",
+          "quantity": 1,
+          "unit_price": 34.0,
+          "final_sale": false
+        }
+      ],
+      "subtotal": 34.0,
+      "coupon_code": null,
+      "discount": 0.0,
+      "shipping_method": "standard",
+      "shipping_cost": 4.99,
+      "total": 38.99,
+      "shipping_address": {
+        "street": "Feldweg 6",
+        "city": "Dresden",
+        "postal_code": "01067",
+        "country": "DE"
+      },
+      "delivered_on": null,
+      "payment_method": "credit_card",
+      "returned_items": [],
+      "refund_total": 0.0,
+      "invoice": {
+        "invoice_id": null,
+        "vat_id": null,
+        "vat_rate": null,
+        "net_amount": null,
+        "vat_amount": null,
+        "gross_amount": null
+      }
+    }
+  }
+}

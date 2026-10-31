@@ -1,0 +1,38 @@
+PASS: MAST clone present with taxonomy definitions.txt -- C:\Users\Prekzursil\.zcode\workspace\default\tss\tsis-deepdive\mastscope\repo\MAST\taxonomy_definitions_examples\definitions.txt
+PASS: MAST clone present with llm_judge_pipeline.ipynb -- C:\Users\Prekzursil\.zcode\workspace\default\tss\tsis-deepdive\mastscope\repo\MAST\llm_judge_pipeline.ipynb
+PASS: AdaMAST read-only clone present with mast.json -- C:\Users\Prekzursil\.zcode\workspace\default\tss\tsis-deepdive\mastscope\repo\AdaMAST-readonly\adamast\core\mast.json
+PASS: git HEAD readable for repo/MAST -- a70542e
+PASS: git HEAD readable for repo/AdaMAST-readonly -- 3c83d81
+PASS: taxonomy.json has 14 modes
+PASS: taxonomy.json has 3 categories
+PASS: category split 5/6/3 -- {'FC1': 5, 'FC2': 6, 'FC3': 3}
+PASS: paper names present for all 14 modes
+PASS: FC1 prevalence sum matches paper -- 44.20 vs 44.2
+PASS: FC2 prevalence sum matches paper -- 32.35 vs 32.3
+PASS: FC3 prevalence sum matches paper -- 23.50 vs 23.5
+PASS: total prevalence ~100% -- 100.05%
+PASS: independent re-parse of definitions.txt yields 14 modes -- got 14
+PASS: taxonomy validation_report.txt contains no FAIL lines
+PASS: AdaMAST crosscheck: 14 codes confirmed in both
+PASS: AdaMAST crosscheck: FM-2.6 drop recorded
+PASS: AdaMAST crosscheck: extra 'Weak verification' code recorded
+PASS: annotation result has binary labels for all 14 modes
+PASS: annotation flags task NOT completed (matches synthetic ground truth)
+PASS: annotation ran via env key -- env:ZAI_API_KEY@https://api.z.ai/api/paas/v4 model=glm-4.5-flash
+PASS: annotation usage recorded -- {'prompt_tokens': 3548, 'completion_tokens': 1211}
+PASS: assembled prompt follows notebook contract (markers + mode list + trace)
+PASS: o1-path blocker honestly recorded -- OPENAI_API_KEY present in env but API call failed: AuthenticationError
+PASS: attempts.log records the successful env-key run
+PASS: privacy_scan.py re-run exits 0 over synthetic corpus
+PASS: scan file counts match manifest -- 24/24
+PASS: scan line count matches manifest -- 240
+PASS: scan message count matches manifest -- 240
+PASS: ALL 10 PII-ish category counts match planted manifest exactly
+PASS: LEAK TEST: zero planted tokens appear in scan output -- checked 23 tokens
+PASS: dashboard has 14 mode bars
+PASS: dashboard carries SYNTHETIC banner
+PASS: dashboard bar values match synthetic_mode_counts.json
+PASS: dashboard privacy panel present with aggregates-only note
+PASS: SMOKE.md exists with receipts
+
+VERIFY OK — all checks passed (36 checks)

@@ -1,0 +1,54 @@
+PASS: repo/.git present (clone exists)
+PASS: clone HEAD resolves to commit 0ffbed9db859
+PASS: benchmarking/run_eval.py present
+PASS: benchmarking/calculate_scores.py present
+PASS: benchmarking/data/GAIA present
+PASS: benchmarking/data/SWE Bench present
+PASS: benchmarking/processed_annotations_gaia present
+PASS: benchmarking/processed_annotations_swe_bench present
+PASS: run_eval.py imports and exposes get_prompt/process_file/run_eval
+PASS: calculate_scores.py imports and exposes main/extract_json_from_text
+PASS: get_prompt() embeds the 20-leaf taxonomy
+PASS: processed_annotations_gaia: 117 gold files
+PASS: processed_annotations_swe_bench: 31 gold files
+PASS: exactly the one known-broken gold file fails JSON parse (['processed_annotations_gaia/a96c6811716c0473b86a23321db79c34.json'])
+PASS: gold errors total = 836 (disk truth; got 836)
+PASS: traces with >=1 error = 143 (got 143)
+PASS: impact distribution LOW/MED/HIGH = 173/362/301 (got {'LOW': 173, 'MEDIUM': 362, 'HIGH': 301})
+PASS: 21 gold category strings deviate from the 20-leaf prompt taxonomy (got 21)
+PASS: gold uses 'Incorrect Memory Usage' x2 — a label in the scorer's 21-list (calculate_scores.py:115-122) but NOT in the 20-leaf prompt taxonomy (run_eval.py:19-52); the remaining 19 deviations are typos/plurals off both lists
+PASS: 2 gold locations are not span_ids in their raw trace (got 2/836)
+PASS: data/GAIA: 117 raw traces
+PASS: data/SWE Bench: 31 raw traces
+PASS: 148 raw traces, 4626 recursive spans (got 148/4626)
+PASS: synthetic session log exists (work/synthetic_session.jsonl)
+PASS: synthetic session has 30 steps (got 30)
+PASS: adapter trace output exists
+PASS: adapter trace top-level keys = {trace_id, spans} (repo raw-trace schema)
+PASS: all 20 adapter spans carry the repo's 19-field span schema
+PASS: adapter trace = 20 recursive spans (got 20)
+PASS: adapter span_ids unique
+PASS: all 30 session steps represented in the trace (covered 30)
+PASS: adapter gold-format output exists
+PASS: adapter gold top-level keys = {errors, scores} (repo gold schema)
+PASS: adapter gold has 4 planted errors
+PASS: adapter gold categories are taxonomy leaves
+PASS: adapter gold locations are real span_ids
+PASS: adapter gold impacts in {LOW, MEDIUM, HIGH}
+PASS: adapter gold carries the four rubrics + overall
+PASS: adapter conversion is deterministic (re-run byte-identical)
+[3.0] [3]
+Error calculating Pearson correlation for reliability: `x` and `y` must have length at least 2.
+Error calculating Pearson correlation for security: `x` and `y` must have length at least 2.
+Error calculating Pearson correlation for instruction adherence: `x` and `y` must have length at least 2.
+Error calculating Pearson correlation for plan optimization: `x` and `y` must have length at least 2.
+Error calculating Pearson correlation for overall scores: `x` and `y` must have length at least 2.
+  0%|          | 0/1 [00:00<?, ?it/s]  0%|          | 0/1 [00:00<?, ?it/s]
+PASS: import repo run_eval.py + calculate_scores.py
+PASS: get_prompt() built (30439 chars; taxonomy + trace payload present)
+PASS: process_file() wrote C:\Users\Prekzursil\.zcode\workspace\default\tss\tsis-deepdive\trail\work\pipeline_out\results\outputs_stub-model-SYNTH\5f1c0ffee5a55e5510ca7a5eedead0dd.json via stubbed LLM boundary (1 call, model=stub-model)
+PASS: calculate_scores.main() scored: weighted_f1=0.2500 loc_acc=0.5000 joint_acc=0.2500
+NOTE: run_eval() glob loop on win32: OSError: [Errno 22] Invalid argument: 'C:\\Users\\Prekzursil\\.zcode\\workspace\\default\\tss\\tsis-deepdive\\trail\\work\\pipeline_out\\win32_glob_sandbox\\out/C:\\Users\\Prekzursil\\.zcode\\workspace\\default\\tss\\tsis-deepdive\\trail\\work\\pipeline_out\\win32_glob_sandbox\\SYNTH\\5f1c0ffee5a55e5510ca7a5eedead0dd.json'
+PASS: stubbed pipeline acceptance (repo run_eval + calculate_scores) re-runs clean
+
+ALL 40 CHECKS PASSED

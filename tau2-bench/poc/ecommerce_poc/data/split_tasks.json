@@ -1,0 +1,17 @@
+{
+  "base": [
+    "ecomm_return_001",
+    "ecomm_return_002",
+    "ecomm_return_003",
+    "ecomm_return_004",
+    "ecomm_vat_001",
+    "ecomm_vat_002",
+    "ecomm_coupon_001",
+    "ecomm_coupon_002",
+    "ecomm_coupon_003",
+    "ecomm_coupon_004",
+    "ecomm_shipping_001",
+    "ecomm_shipping_002",
+    "ecomm_shipping_003"
+  ]
+}

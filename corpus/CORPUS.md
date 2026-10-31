@@ -1,270 +1,226 @@
 # CORPUS — definitive multi-runtime agent-session corpus inventory
 
-Generated: 2026-10-18 (final scan run completed 10:30:04; machine-local time)
+Refreshed: **2026-10-30/31** (final run completed 00:30:30; lineage: first build 2026-10-18).
 Built by: `build_corpus.py` (this directory) — **READ-ONLY on every source**: the tool only
 `os.scandir()`s and `open()`s files for hashing/parsing. Nothing outside this output
 directory (`manifest.jsonl`, `dedup_index.json`, `canonical_set.json`, `stats.json`,
 `.state.json`, `scan.log`) was moved, renamed, modified or deleted. All output writes are
-atomic (tmp + `os.replace`). The corpus output directory itself is excluded from indexing
-(self-exclusion) so the inventory can never index its own artifacts.
+atomic (tmp + `os.replace`); `.state.json` checkpoints every 5,000 records.
 
-## 1. Totals
+**Location note (2026-10-30):** the project tree was restructured mid-run by a concurrent
+lane (`tsis/deepdive` → `tsis/agent-evaluation`, git-committed). The canonical incremental
+lineage (incl. `.state.json`) lives HERE (`tsis/agent-evaluation/corpus/`); a synced copy of
+the four deliverables is placed at `tsis/deepdive/corpus/` (the path the build mandate
+names). Re-run the builder from THIS directory.
+
+## 1. Totals (final run 2026-10-31T00:30)
 
 | metric | value |
 |---|---|
-| manifest records | **124,327** (122,733 `ok` + 1,594 `missing`, never dropped) |
-| unique content hashes (annotation set) | **41,877** |
-| duplicate files / duplicate hashes | 116,445 files sharing 35,589 hashes |
-| parsed (message_count extracted) | 68,633 (`parse_ok=true`) |
-| parse-deferred (budget; see §10) | 51,548 — picked up by later `--update` runs |
-| total bytes of `ok` records | 371,673,156,809 (≈346.1 GiB) |
-| total message records counted | 35,885,450 |
-| by drive | C: 51,643 · D: 71,090 |
-| by origin | live 47,892 · backup 51,446 · **orphan-backup 23,395** |
-| by storage_type | jsonl 109,199 · json 4,294 · zst 5,270 · gz 1,118 · sqlite 1,477 · directory 510 · other 865 |
+| manifest records | **163,681** (155,976 `ok` + 7,705 `missing`, never dropped) |
+| unique content hashes (annotation set) | **71,590** |
+| duplicate files / duplicate hashes | 122,448 files sharing 38,062 hashes |
+| parsed (`parse_ok=true`) | 99,853 · deferred (budget) 50,074 |
+| total bytes of `ok` records | 409,207,979,223 (≈381.0 GiB) |
+| total message records counted | 45,332,719 |
+| by drive | C: 65,022 · D: 90,954 |
+| by origin | live 61,055 · backup 70,932 · **orphan-backup 23,989** |
+| by storage_type | jsonl 124,761 · json 14,621 · zst 5,272 · gz 2,036 · sqlite 2,186 · directory 3,421 · other 3,679 |
+| run economics | final warm run: `hashed=140 reused=155,785 errors=0` (~10 min, all cached except new live files); first cold run 2026-10-18 ~33 min |
 
 Per-file schema: `{path, drive, runtime, origin, storage_type, size, mtime, sha256,
 parse_ok, message_count, first_ts, last_ts, status, parse_note, file_count, members,
-jsonl_members}` (`status` is `ok`/`missing`; `file_count` on directory records; `members`
-on the tar record).
+jsonl_members}` (`status` = `ok`/`missing`; `file_count` on directory records; `members`
+on tar records).
 
 Identity rule (control fact a): `sha256` is over the file's bytes **as stored** — for
-`.jsonl.zst` that is the **compressed** bytes. Decompression is used only to count
+`.jsonl.zst` that is the **compressed** bytes; decompression is used only to count
 messages, never for identity.
 
-## 2. Per-runtime inventory (records ≥ 5; 72 runtimes total)
+## 2. Per-runtime inventory (ok records; 81 runtimes — top 42 shown)
 
-| runtime | files | size | parsed | origin mix | where |
+| runtime | files | size | parsed | origin | where |
 |---|---:|---:|---:|---|---|
-| agent-sessions-vault | 39,716 | 163.2 GiB | 38,421 | backup | `D:\agent-sessions-vault\stores\**` (wave-7/8 sync target; growing during scan — §8) |
-| claude-code | 29,365 | 30.9 GiB | 21,503 | live 19,351 + backup 10,014 | `~/.claude/projects` + `D:\claude-projects-archive` |
-| claude-code-free | 20,040 | 12.3 GiB | 1 | live | `~/.claude-free/projects` — **parallel Claude home, missed by every control** |
-| claude-history-viewer | 19,769 | 9.4 GiB | 0 | orphan-backup | `D:\claude-history-viewer-archive` (C: `~/.claude-history-viewer` is a 1-file stub) |
-| codex | 4,131 ok (+1,586 missing) | 42.2 GiB ok | 2,617 | live 2,617 + backup 1,514 | `~/.codex/sessions` (.zst), `archived_sessions` (19, separate runtime), `D:\codex-seed-extracted`; `D:\codex-sessions-archive-20260621` emptied mid-scan (§8) |
-| codex-seed-tar | 1 | 40.9 GiB | — | backup | `D:\codex-sessions-seed-20260315.tar`, **2,186 members** listed via tar headers only, never extracted |
-| vm-backup | 3,376 | 3.4 GiB | 3,286 | orphan-backup | `~/Downloads/BACKUPS VM` (VM profile snapshots containing session files) |
-| cursor-chats | 1,522 | 1.8 GiB | 1,093 | live | `~/.cursor/chats` (json + sqlite) |
-| cursor-globalstorage | 2 | 2.8 GiB | 0 | live | `AppData\Roaming\Cursor\User\globalStorage\state.vscdb` (3.0 GB) + `conversation-search.db` — sqlite, `parse_ok=false` by design |
-| cursor-acp | 4 | — | 2 | live | `~/.cursor/acp-sessions/<uuid>/{meta.json,store.db}` |
-| vscode-globalstorage / -workspacestorage | 3 / 54 | 0.02 GiB | 0 | live | Copilot-chat state.vscdb + `github.copilot-chat` session jsons |
-| zcode-rollout | 530 | 18.3 GiB | 520 | live | `~/.zcode/cli/rollout/model-io-sess_*.jsonl` |
-| zcode-exec | 719 | 8.3 GiB | 0 | live | `~/.zcode/cli/exec/sess_<id>/**` (all files; exec logs) |
-| zcode-image-cache | 28 | 0.01 GiB | 0 | live | `~/.zcode/cli/image-cache/sess_<id>/**` |
-| zcode-memories | 69 | <0.01 GiB | 0 | live | `~/.zcode/cli/memories/{projects,sess_*}` |
-| zcode-v2 / zcode-cli-db | 2 / 1 | 0.4 GiB | 0 | live | `~/.zcode/v2/db.sqlite`(+`tasks-index.sqlite`) · `~/.zcode/cli/db/db.sqlite` (no `*.bak` snapshots exist — verified by `ls`) |
-| zcode-workspace | 296 | 0.18 GiB | 170 | live | `~/.zcode/workspace/**` session-pattern files (corpus dir self-excluded) |
-| grok | 505 (dirs) | 3.9 GiB | 505 | live | `~/.grok/sessions/<enc-cwd>/<session-id>/` — **one DIRECTORY per session** (control fact b); `sha256` = Merkle digest over the session dir's file hashes; `message_count` from `updates.jsonl`+`chat_history.jsonl` |
-| grok-desktop | 2 | — | 0 | live | `AppData\Roaming\Grok Bot` leveldb dirs (directory records) |
-| gemini-cli | 197 | <0.01 GiB | 197 | live | `~/.gemini/tmp/<proj>/chats/session-*.jsonl` |
-| antigravity | 14 | — | 14 | live | `~/.gemini/config/projects/*.json` (the real target of the `~/.antigravitycli` **symlink**, which is never traversed) + `AppData\Local\antigravity` |
-| claude-desktop-code-sessions | 8 | — | 8 | live | `AppData\Roaming\Claude\claude-code-sessions/<u1>/<u2>/local_*.json` |
-| claude-desktop-agent-mode | 2 | — | 2 | live | `AppData\Roaming\Claude\local-agent-mode-sessions/**` |
-| claude-desktop-indexeddb / -localstorage | 2 / 1 | — | 0 | live | claude.ai desktop leveldb (directory records, `parse_ok=false`) |
-| claude-agent-worktrees | 10 | — | 10 | live | `~/.claude/agent-worktrees/agent-*/` (control fact g) |
-| claude-agent-handoff | 5 | — | 0 | live | `~/.claude/agent-handoff/**` — all files, index-only (control fact g) |
-| claude-todos / claude-checkpoints | 24 / 2 | — | 2 | live | `~/.claude/todos/*.jsonl`, `~/.claude/checkpoints` |
-| codex-root-state | 12 | 0.7 GiB | 6 | live | `~/.codex/{history.jsonl, session_index.jsonl, state_5.sqlite, …}` |
-| codex-archived | 19 | — | 19 | live | `~/.codex/archived_sessions` (ai-sessions-render deliberately skips it; we include it) |
-| opencode | 2 | — | 1 | live | `~/.local/share/opencode/{opencode.db, storage/session_diff/ses_*.json}` |
-| cline | 26 | 0.35 GiB | 18 | live | `~/.cline/apps/kanban/sessions/*.jsonl`, `user_input_history.jsonl`, `db/*.db` |
-| copilot / copilot-mem0 | 1 / 1 | — | 1 | live | `~/.copilot/session-state/*.jsonl` · `~/.copilot/mem0` |
-| continue-index | 2 | — | 0 | live | `~/.continue/index/*.sqlite` |
-| cyberstrike | 1 | — | 0 | live | `~/.cyberstrike/cyberstrike.db` |
-| basic-memory-sessions | 43 | — | 0 | live | `D:\basic-memory\sessions\*.md` — **vault's own session-capture notes; no control names it** |
-| ai-exports | 28 | 0.26 GiB | 28 | orphan-backup | `~/Downloads/AIs Conversations` (ChatGPT/Claude/Gemini export `conversations.json`/`transcript.json`) |
-| skills-claude-web | 210 | — | 206 | orphan-backup | `~/Downloads/skills_claude_web` |
-| vm-consolidated | 12 | — | 12 | orphan-backup | `~/Downloads/vm-consolidated-2026-09-24` |
-| d-backups | 33 | 3.6 GiB | 0 | backup | `D:\Backups/**` (config snapshots etc.) |
-| other:* (generic sweep) | ~2,000 | ~2.7 GiB | ~5 | mostly live | 33 further dotdirs — largest: `.vscode` 923, `.agents` 690, `.pplx` 149, `.scratch` 47, `.quokka` 30 … |
+| agent-sessions-vault | 60,707 | 212.6 GiB | 59,265 | backup | `D:\agent-sessions-vault\stores\**` (63 stores; grew 39.7k→60.7k files since Oct 18) |
+| claude-code | 31,807 | 37.8 GiB | 23,944 | live+backup | `~/.claude/projects` + `D:\claude-projects-archive` |
+| claude-code-free | 22,516 | 17.8 GiB | 2,487 | live | `~/.claude-free` — parallel Claude home, missed by every control |
+| claude-history-viewer | 19,769 | 10.1 GiB | 0 | orphan-backup | `D:\claude-history-viewer-archive` (C: `~/.claude-history-viewer` = 1-file stub, control fact e) |
+| **antigravity-cli (NEW)** | 3,894 | 0.56 GiB | 1,540 | live | `~/.gemini/antigravity-cli` — conversations/*.db(.pb), history.jsonl, brain/ — **found by this refresh, in no control** |
+| grok | 3,416 (dirs) | 5.9 GiB | 3,416 | live | `~/.grok/sessions/<enc-cwd>/<id>/` — one DIRECTORY per session (fact b); Merkle sha; disk count re-verified = 3,416 |
+| vm-backup | 3,389 | 3.6 GiB | 3,299 | orphan-backup | `~/Downloads/Backups/**` (re-homed, §5) |
+| codex | 2,628 | 1.46 GiB | 2,628 | live | `~/.codex/sessions` — **.jsonl.zst only** (fact a) |
+| other:vscode | 1,850 | — | ~0 | live | generic dotdir sweep |
+| cursor-chats | 1,690 | 1.95 GiB | 1,261 | live | `~/.cursor/chats` (json + sqlite) |
+| zcode-exec | 1,203 | 0.07 GiB | 0 | live | `~/.zcode/cli/exec/**` (fact h; sess_ dirs under bash-startup/ + shell-snapshots/) |
+| from-c-backup (NEW) | 375 | 0.30 GiB | 17 | orphan-backup | `D:\Downloads\from-C-20260818` (67 GB C:-copy; Firefox-profile dbs + relocated .claude jsonl) |
+| zcode-workspace | 365 | 0.50 GiB | 227 | live | `~/.zcode/workspace/**` |
+| ai-exports | 241 | 1.21 GiB | 235 | orphan-backup | `~/Downloads/AI-Conversations/**` (re-homed, §5; includes the skills_claude_web tree) |
+| gemini-cli | 203 | — | 203 | live | `~/.gemini/tmp/<proj>/chats/session-*.jsonl` |
+| zcode-rollout | **83** | **37.9 GiB** | 65 | live | `~/.zcode/cli/rollout` — **rotated since Oct 18** (530 files/19.1 GiB → ~80/37.9 GiB; the 527 vanished files are `missing`-retained with hashes) |
+| cowork-private (NEW) | 81 | 18.8 GiB | 49 | orphan-backup | `~/Cowork/private` — state.vscdb cursor snapshots (§5b-8) |
+| cowork-backups (NEW) | 112 | 0.02 GiB | 85 | orphan-backup | `~/Cowork/backups` |
+| cursor-globalstorage | 2 | 2.8 GiB | 0 | live | `state.vscdb` (3.0 GB) + conversation-search.db — sqlite, `parse_ok=false` by design |
+| zcode-image-cache / -memories / -v2 / -cli-db / -backup | 47/126/2/1/8 | 0.45 GiB | 0/0/0/0/0 | live | fact h stores; v2 has **no `*.bak` db snapshots on disk** (receipt: `ls ~/.zcode/v2/*.bak*` → only config/setting .bak, no db.sqlite.bak) |
+| codex-root-state / codex-archived | 12 / 19 | 0.72 GiB | 6/19 | live | `~/.codex` top + `archived_sessions` |
+| claude-desktop-* | 11+2+1 | 0.05 GiB | 11+0+0 | live | Roaming\Claude: code-sessions 11, IndexedDB+LocalStorage leveldb 2+1; **local-agent-mode-sessions vanished** (2 records now `missing` — Claude Desktop removed it) |
+| claude-agent-worktrees / -handoff / todos / checkpoints / history / server-commander | 10/5/24/2/1/1 | — | 10/0/24/2/1/1 | live | facts (g)+(this refresh's additions; todos = uuid-agent-*.json via walk_all — the prior CORPUS's "24" never existed in its own manifest, now it really does) |
+| antigravity (NEW) | 8 | — | 8 | live | `~/.gemini/config/projects/*.json` (uuid names; prior CORPUS claimed these but no root covered them — fixed) |
+| agentchattr (NEW) | 4 | — | 4 | live | `D:\agentchattr\data\{agentchattr_log,claude_queue,codex_queue,gemini_queue}.jsonl` (was wrongly D_PRUNEd) |
+| grok-root (NEW) | 2 | — | 1 | live | `~/.grok` top (active_sessions.json …) |
+| basic-memory-sessions | 51 | — | 0 | live | `D:\basic-memory\sessions\*.md` |
+| d-backups | 33 | 5.75 GiB | 0 | backup | `D:\Backups/**` (docker-volumes/images pruned) |
+| claude-desktop-backup (NEW) | 22 | 0.01 GiB | 22 | orphan-backup | `~/Documents/claude-desktop-backup-20260524` (7,460-file tree; 22 session-matching) |
+| skills-claude-web / vm-consolidated (old paths) | 0 ok (210 + 12 `missing`) | — | — | — | content now lives under ai-exports / vm-backup at the re-homed parents |
+| codex-seed-tar | 2 (1 ok + 1 missing) | 40.9 GiB | — | backup | vault copy **byte-identical** to the vanished original (sha `f44910f3…` MATCH); 2,186 members listed, never extracted |
+| cline / copilot / copilot-mem0 / continue-index / opencode / cyberstrike | 26/1/1/2/2/1 | 0.73 GiB | 18/1/0/0/1/0 | live | as Oct-18 |
+| other:* (generic sweep) | ~4,300 | ~2.9 GiB | ~10 | live | `.agents` 732, `.pplx` 149, `.grok-fleet` 48, `.scratch` 47, `.quokka` 30 … |
 
-Checked and confirmed **empty of session-like files** (receipts: `ls`/`find` in the build
-session): `.aider` (analytics/caches only), `.continue/dev_data` (empty), `.agy`
-(AGENTS.md/skills), `.gemini/history` (git checkpointer data, no jsonl), AppData
-`Goose`/`Codex`/`Claude`-caches/`fabric` (Electron app shells), `AppData\Local\Temp\tmp.*/sessions`
-(pattern from the control — **zero matches**), `D:\Users\Prekzursil` (empty profile stub),
-`.claude-free` sibling dirs `agents-backup-20260810`/`ast-salvage-20260810`/`file-history`
-(0 jsonl each), `.claude\backups` (0 jsonl). Windsurf/Codeium, crush, `.goose`, `.fabric`:
-**not installed** (no such dirs on C: or D: — receipt: full home dotdir listing + D: root listing).
+Checked, confirmed **no session store** (receipts: `ls`/`find` this session):
+`.aider` (analytics/caches; no `.aider.chat.history.md` — checked), crush (no dir on C: at
+all), fabric (Roaming shell = `locales` only), Windsurf (no Roaming dir; `.codeium/windsurf`
+= 1 config json), Goose (`~/.goose` absent; `.config/goose` = configs + skills, **0 jsonl**;
+`.local/share/goose` absent), Roo/Cline VS Code ext (no globalStorage entry; Cline lives at
+`~/.cline`), `~/.antigravity` (empty), `AppData\Local\Temp\tmp.*/sessions` (zero matches),
+`D:\verdict-archive` (web-crawl archive: html/items + 1 index.jsonl — non-session, see §5c),
+`D:\Downloads\from-C-20260818` non-session bulk (media/installers).
 
 ## 3. Dedup & canonical set (control fact c)
 
-Deduplication is **strictly per-file sha256**. No lineage, session-id or filename logic
-anywhere — the failure mode documented in the vault note *"resumed-session merge fix (47%
-of real Codex store was silently dropped)"* (two rollout files sharing one `session_id`)
-is structurally impossible here: every physical file is its own manifest record keyed by
-its own hash. 116,445 duplicate paths across 35,589 hashes are the expected consequence of
-the vault/backup strategy (the wave-8 vault deliberately re-copies live stores).
+Deduplication is **strictly per-file sha256** — no lineage/session-id/filename logic
+anywhere. The failure mode documented in the vault note *"resumed-session merge fix (47% of
+real Codex store silently dropped)"* (two rollout files sharing one `session_id`) is
+structurally impossible here: every physical file is its own manifest record keyed by its
+own hash. 122,392 duplicate paths across 38,048 hashes are the expected consequence of the
+vault/backup strategy (the wave-7/8 vault deliberately re-copies live stores).
 
 - `dedup_index.json` — every hash with >1 path → all paths (sorted).
 - `canonical_set.json` — one path per unique hash: **newest mtime wins, tie → larger size,
-  tie → lexicographically smallest path** (deterministic). This is the annotation set
-  (41,877 entries).
+  tie → lexicographically smallest path** (deterministic). The annotation set = 71,559.
 
-## 4. Origin classification
+## 4. Origin classification & orphans
 
-- `live` — under a live store root on C: (incl. `~/.codex/archived_sessions`, which is
-  part of the live codex store despite the name; and `D:\basic-memory\sessions`, whose
-  native home is the D: vault).
-- `backup` — copy/snapshot whose original store still exists: `D:\claude-projects-archive`
-  (original `~/.claude/projects` live), `D:\codex-seed-extracted` + seed tar (original
-  `~/.codex/sessions` live), `D:\agent-sessions-vault` (copies of live stores).
-- `orphan-backup` (23,395 files) — backups whose original no longer exists as a usable
-  local store:
-  - `D:\claude-history-viewer-archive` (19,769) — control fact e: the C:
-    `~/.claude-history-viewer` is a stub containing only `user-data.json`; the ~9.4 GiB
-    archive (lineage `GitHub-Full-backup-7-18-2026_e39521c3/sessions` and 6 sibling
-    lineage dirs + `archive-manifest.json`) is the only real copy.
-  - `~/Downloads/BACKUPS VM` (3,376 session files) and `vm-consolidated-2026-09-24` (12)
-    — snapshots of VM-internal stores; the VM stores are not present as host folders.
-  - `~/Downloads/AIs Conversations` (28) — cloud-conversation exports; no local original.
-  - `~/Downloads/skills_claude_web` (210) — claude-web session exports.
-  - `D:\codex-sessions-archive-20260621` — special case: **emptied while this scan was
-    running** (§8); its 1,586 files are retained as `missing` records with their hashes,
-    so nothing is lost to the index.
+- `live` — under a live store root (incl. `~/.codex/archived_sessions`; `D:\basic-memory`;
+  `D:\agentchattr` — the bridge tool's live data home).
+- `backup` — copy whose original store still exists (vault `stores/**`, `D:\claude-projects-archive`).
+- `orphan-backup` (23,989) — original no longer exists as a usable local store:
+  `D:\claude-history-viewer-archive` (19,769; fact e), re-homed Downloads backups
+  (vm-backup 3,389 + skills 210 + vm-consolidated 12 + ai-exports 241), `~/Cowork/{private,backups}`
+  (VM/cursor snapshot lineage), `~/Documents\claude-desktop-backup-20260524`, `D:\Downloads\from-C-20260818`.
+- **`missing` (7,705) is not deletion** — read-only guarantee. Breakdown by runtime:
+  vm-backup 3,376 (old `Downloads\BACKUPS VM` path, re-homed), codex 3,101 (the D: codex
+  archive 1,586 + seed-extracted 1,514 + old tar path 1 — all consolidated INTO the vault;
+  the vault's copies are indexed `ok` with identical hashes), zcode-rollout 527 + zcode-exec
+  398 + zcode-workspace 33 (live-store rotation since Oct 18), skills 210 / ai-exports 28 /
+  vm-consolidated 12 (re-homed), d-backups 15, claude-desktop-agent-mode 2 (store removed
+  by Claude Desktop), agent-sessions-vault 2, codex-seed-tar 1 (old path), other churn.
 
-## 5. Control-source reconciliation (both directions)
+## 5. Control-source reconciliation (BOTH directions)
 
-Controls: **S1** `ai-sessions-render` repo (`llm_anthology/discover.py` PROVIDERS table,
-`adapters/{codex_rollout,codex_state,claude_code,grok,chatgpt,claude,codex,gemini}.py`,
-`.scratch/` probes); **S2** vault notes `D:\basic-memory\projects\ai-sessions-render\*.md`
-(4 notes; the merge-fix note supplied facts a/b/c); **S3**
-`out\harness-audit-2026-10-18\CONTROL-session-stores.md`; **S4** the task mandate (facts
-d–j).
+Controls: **S1** `ai-sessions-render` (`llm_anthology/discover.py` PROVIDERS + `adapters/`);
+**S2** vault notes `D:\basic-memory\projects\ai-sessions-render\*.md` (facts a/b/c);
+**S3** `out\harness-audit-2026-10-18\CONTROL-session-stores.md` (+ its own control:
+`sessions-vault.md` discovery table, 57-store `stores.yaml`); **S4** the build mandate
+(facts d–j); **S5** the wave-8 vault itself (`manifest-summary.json` 2026-10-22: 63 stores,
+234,193 files / 347.21 GB; `state/last-run.json` finished 2026-10-24, lossrisk=0).
 
-### 5a. Every store any control knows → status in this corpus
+### 5a. Every store any control knows → status here
 
-| store (control) | in corpus? | evidence |
+| control store | here? | evidence |
 |---|---|---|
-| `~/.codex/sessions` rollout `.jsonl.zst` (S1,S2-fact-a) | ✅ 2,616 zst live + 19 archived | §2; `find` receipts |
-| `~/.codex/state_5.sqlite` (S1 codex_state) | ✅ codex-root-state | §2 |
-| `~/.claude/projects` (S1) | ✅ 19,351 live | §2 |
-| Grok `<grok_home>/sessions/<enc-cwd>/<id>/` directory store (S1,S2-fact-b) | ✅ 505 dir records | §2 |
-| ChatGPT export `conversations.json`(+`chat.html`) (S1) | ✅ ai-exports (orphan-backup) | §2 |
-| Claude export `conversations.json`(+`users.json`…) (S1) | ✅ ai-exports | §2 |
-| Codex task export `codex.json` (S1) | ✅ matched by name rule where present under scanned roots | file_accepts |
-| Gemini Takeout `transcript.json` (S1) | ✅ ai-exports | §2 |
-| `D:/claude-history-viewer-archive` (S3) | ✅ 19,769 orphan-backup | §4 |
-| `D:/claude-projects-archive` (S3) | ✅ 10,014 backup | §2 |
-| `~/.claude/agent-worktrees/agent-*`, `~/.claude/agent-handoff` (S3, S4-g) | ✅ 10 + 5 | §2 |
-| `AppData/Local/Temp/tmp.*/sessions` (S3) | ✅ checked — **zero exist** (receipt: `ls -d …/Temp/tmp.*/sessions` → no match) | §2 |
-| grok / opencode / cyberstrike / cursor / codex live+archive / zcode rollout+exec+workspace / claude projects (S3 "also verify") | ✅ all present with counts+bytes | §2 |
-| `D:\agent-sessions-vault` manifest+stores+state (S4-f) | ✅ 39,716 records; vault's own `manifest.jsonl` cross-check in §6 | §6 |
-| `D:\codex-sessions-archive-20260621`, `D:\codex-seed-extracted`, seed tar via `tar -t` (S4-f) | ✅ 1,586 (now missing-marked) · 1,514 · 1 tar record (2,186 members) | §2, §8 |
-| ZCode `cli/exec/sess_*`, `cli/image-cache/sess_*`, v2 `db.sqlite`+`*.bak` (S4-h) | ✅ 719 · 28 · v2 2 (no `*.bak` snapshots exist on disk — `ls ~/.zcode/v2` receipt) | §2 |
-| Downloads `AIs Conversations`, `BACKUPS VM`, `vm-consolidated-2026-09-24`, `skills_claude_web` (S4-i) | ✅ 28 · 3,376 · 12 · 210 | §2 |
-| "Application Data" junction triad (S4-j) | ✅ never traversed: the walker skips every reparse point (`FILE_ATTRIBUTE_REPARSE_POINT` check) and no `du` was used anywhere | build_corpus.py `walk_files` |
-| C: stub vs D: archive size-checking (S4-e) | ✅ every record carries real `size`; stub identified | §4 |
+| codex `.jsonl.zst` live (S1,S2-a) | ✅ 2,628 zst | §2 |
+| Grok dir-per-session (S1,S2-b) | ✅ 3,416 dir records | §2 (disk recount = manifest) |
+| per-file-hash dedup (S2-c) | ✅ structural | §3 |
+| claude-code projects / codex_state / chatgpt+claude+gemini exports (S1) | ✅ | §2 (ai-exports) |
+| `D:\claude-history-viewer-archive`, `D:\claude-projects-archive` (S3,e,f) | ✅ 19,769 / 10,014+ | §2 |
+| agent-worktrees / agent-handoff (S3,S4-g) | ✅ 10 / 5 | §2 |
+| Temp `tmp.*/sessions` (S3) | ✅ checked, zero exist | §2 receipts |
+| vault / codex archives / seed tar (S4-f) | ✅ vault 60,707 ok; D: originals `missing`, vault copies ok; tar sha-identical, 2,186 members via headers only | §1, §4 |
+| zcode exec/image-cache/v2 (S4-h) | ✅ 1,203 / 47 / 2 (+8 zcode-backup) | §2 |
+| Downloads four backups (S4-i) | ✅ re-homed & covered at new parents | §5b-1 |
+| junction triad (S4-j) | ✅ walker skips all reparse points; no `du` anywhere | `build_corpus.py::walk_files` |
+| wave-8 additions beyond old ROOTS: claude-history, claude-free, claude-server-commander, grok-root, d-agentchattr, cowork-*, claude-desktop-backup-20260524, downloads-loose-rollouts (S3 sessions-vault.md) | ✅ ALL now first-class roots (this refresh); loose rollouts: 0 files remain on disk (`glob` receipt) — their vault copies are indexed | §2 |
+| S5 vault stores `goose-config` (3,237 files) / `goose-appdata` (88) / `grokbot` (13) / `verdict-archive` (34,118) / `primariro-scratchpad-archive` (10) | ⚠️ vault whole-tree copies of **non-session** config/web-crawl data — vaulted by the vault's content-preservation policy, deliberately not session-corpus material; `.config/goose` itself probed: **0 jsonl**; `D:\verdict-archive`: 1 index.jsonl (web crawl) | §2 receipts |
+| S5 `gemini-antigravity` (3,890) | ✅ now indexed live as antigravity-cli 3,894 | §2 |
 
-### 5b. Found by this scan beyond the control sources
+### 5b. Found by this scan beyond the controls
 
-1. `~/.claude-free` — full parallel Claude Code home, **20,040 session files (12.3 GiB)**.
-   Not mentioned by S1/S2/S3. Largest single discovery.
-2. `D:\basic-memory\sessions` — 43 markdown session-capture notes (the memory vault's own
-   session logs). New store class (markdown); included as `storage_type=other`.
-3. Claude Desktop stores (Roaming): `claude-code-sessions` (8), `local-agent-mode-sessions`
-   (2), `IndexedDB`/`Local Storage` leveldb (3 directory records).
-4. Cursor `acp-sessions` (4) and `globalStorage` state.vscdb 3.0 GB + `conversation-search.db`
-   (S3 said "cursor chats" but not the globalStorage sqlite).
-5. VS Code Copilot surfaces: `globalStorage` (3) + `workspaceStorage` (54 state.vscdb) +
-   `github.copilot-chat` session jsons.
-6. `~/.gemini/config/projects/*.json` — antigravity CLI session files (the
-   `~/.antigravitycli` entry is a *symlink* into this dir; the walker refuses symlinks, so
-   the real files are indexed at their real location).
-7. `~/.cline/apps/kanban/sessions` (26), `~/.copilot/{session-state,mem0}` (2),
-   `~/.continue/index` (2), `~/.local/share/opencode` (2), `~/.cyberstrike/cyberstrike.db`.
-8. `~/.agents` (690 files), `~/.vscode` (923), `~/.pplx` (149), `~/.scratch` (47),
-   `~/.quokka` (30) and 28 more dotdirs with a handful of session-like files each.
-9. Grok desktop (`Grok Bot`) leveldb; `~/.grok` bookkeeping beyond `sessions/` was not
-   separately inventoried (sessions tree is the store; `active_sessions.json` etc. are
-   covered by the sweep as `other:grok`).
+1. **`~/.gemini/antigravity-cli`** — the Antigravity CLI session store (conversations
+   .db/.pb ×120, history.jsonl, conversation_summaries.db, brain/) — in NO control source;
+   the prior corpus missed it (`.gemini` is sweep-excluded; only `tmp` was a root).
+2. `D:\Downloads\from-C-20260818` — 67 GB August copy of C: user data; 375 session-level
+   records (Firefox profile dbs, relocated `.claude` trees under `New folder (2)`, `SWFOC
+   editor`, `swfoc_memory`).
+3. The Downloads **re-homing** itself (control paths now 404): `AI-Conversations\` and
+   `Backups\` parents now carry the four control-(i) stores.
+4. ZCode live-store rotation (rollout 530→80 files at ~2× per-file size) — detected, history
+   kept as `missing` with hashes.
+5. Prior refresh's beyond-control finds stand: `.claude-free` (22,497), `D:\basic-memory\sessions`,
+   Claude Desktop stores, cursor globalStorage sqlite, VS Code Copilot surfaces, `.cline`,
+   `.copilot`, `.continue`, `.local/share/opencode`, `.cyberstrike`.
 
-### 5c. Known by controls, deliberately not in the manifest (documented differences)
+### 5c. Known to controls, deliberately not manifest-tracked
 
-- S1's discovery does **not** count `~/.codex/archived_sessions`; we include it (19 files,
-  runtime `codex-archived`) — a superset, not a miss.
-- S1 counts Claude/ChatGPT exports anywhere on disk via sibling-confirmed
-  `conversations.json`; we match them inside the scanned roots (Downloads exports root +
-  generic sweeps). A `conversations.json` sitting in an arbitrary unswept folder (e.g.
-  somewhere under `Documents\`) would be missed — bounded, see §9.
+- `~/.codex/archived_sessions` is INCLUDED (superset vs S1, which skips it).
+- S1's anywhere-on-disk export matching is bounded here to scanned roots (a
+  `conversations.json` in an arbitrary unswept folder would be missed — bounded by §6 scope).
+- Vault stores that are pure config/web-crawl (goose-config, verdict-archive, …) — see §5a.
 
-## 6. Cross-check vs `D:\agent-sessions-vault`
+### 5d. Numeric cross-check vs the vault's own manifest (S5)
 
-- Vault's own `manifest.jsonl` (read 2026-10-18, multiple times): **4 entries**, both
-  fixture stores `fixt-a`/`fixt-b` (`manifest-summary.json` totals `total_entries: 4`).
-- This corpus records **39,716 files (163.2 GiB)** under the vault — the wave-7/8 sync
-  pipelines are writing `stores/<runtime>/...` far ahead of their manifest. Discrepancy
-  reported in both directions: the vault manifest **under**-reports its own content; the
-  corpus manifest is the fuller view. Re-run after the pipelines quiesce to reconcile.
+Vault summary (Oct 22) top stores vs this corpus's ok-records for the same content
+(different accept rules — vault = whole-tree, corpus = session-pattern):
+grok 70,969 files ↔ 3,416 dirs · claude-free 20,150 ↔ 22,497 · claude-code 19,457 ↔ 31,789 ·
+claude-projects-archive 14,378 ↔ ~10,000 accepted · codex-archive 1,587 ↔ 60.79 GB absorbed into
+vault runtime · codex-live 2,618 ↔ 2,628 · cowork-private 130 ↔ 81 (snapshot churn) ·
+zcode-rollout 778 ↔ 81 live (vault froze the pre-rotation copy). No store known to the vault
+is absent here after this refresh; the two prior one-way gaps (antigravity-cli live,
+Cowork originals) are closed.
 
-## 7. Verification receipts (all executed this session)
+## 6. Exclusions (every one deliberate — hard rule 2)
 
-- **Hashing determinism**: 10 independent re-hashes of manifest records (random seeds 42
-  and 7; formats jsonl/zst/3.0GB-sqlite/json/gz) — all `MATCH`. Grok directory Merkle
-  digest independently recomputed for one session (12 files) — `MATCH`.
-- **Tar member count**: `tar -tf D:\codex-sessions-seed-20260315.tar | wc -l` → **2186**;
-  in-manifest `members` = 2186; `jsonl_members` = 1,514. Never extracted.
-- **Incremental update**: final run `hashed=10 reused=122,672 errors=0`; the run before
-  `hashed=64 reused=122,618`. Size+mtime cache skip proven at 99.99% of the corpus.
-- **Missing-marking**: 1,594 records `status=missing` retained with full metadata (1,586 =
-  the emptied codex archive; rest vault churn) — history never dropped.
-- **zst**: `python -c "import zstandard"` → `zstandard 0.25.0` (Python 3.14.6); all live
-  codex rollouts hashed as compressed bytes and parsed after decompression.
-- Full command log with timestamps: `scan.log` in this directory.
-
-## 8. Concurrent mutations observed DURING the scan (read-only scan of a moving target)
-
-| time (scan.log) | event |
-|---|---|
-| 06:0x (pre-scan probe) | vault = 4 fixture entries, ~31 KB |
-| 07:22:57 → 08:25 | vault `stores/` grows to 36,206 files while the scan walks it |
-| ~08:30 | vault at 125.9 GB |
-| between run 2 (07:31) and run 4 (09:48) | `D:\codex-sessions-archive-20260621` **emptied** (1,586 files → `missing`; content absorbed by the consolidating vault) |
-| 10:0x | vault at 236.1 GB, still growing |
-| across runs | live stores keep growing: `.claude/projects` 19,318 → 19,351 files; new session files appear with each pass |
-
-The corpus is therefore **timestamped and re-runnable by design** (§10); `missing` never
-means deleted-by-us (read-only guarantee, §top).
-
-## 9. Exclusions (every one deliberate, per hard rule 2)
-
-Directory-name prunes (all roots): `node_modules .venv venv .git __pycache__ .pytest_cache
+Directory prunes (all roots): `node_modules .venv venv .git __pycache__ .pytest_cache
 .mypy_cache .ruff_cache .ipynb_checkpoints target site-packages dist-info .hg .svn`.
-Transient sqlite sidecars `-shm/-wal/-journal` are skipped (the main db is the record).
-Home dotdirs pruned from the generic sweep (pure package/model/browser caches):
-`.cache .cargo .rustup .gradle .m2 .conda .npm .nuget .dotnet .vscode-server
-.vscode-server-insiders .android .docker .ollama .lmstudio .VirtualBox
-.ScreamingFrogSEOSpider .kivy .msf4 go`. D: trees pruned from the depth-2 discovery walk
-(60 names, full list in `build_corpus.py::D_PRUNE` — games/VMs/ISOs/media/package caches,
-e.g. `SteamLibrary, VMware VMs, HyperV, ISOs, Media, Models, Docker, WSL, npm-cache,
-micromamba, metasploit-framework`). `D:\Backups` additionally prunes
-`docker-volumes/images`. Curated store roots are excluded from the sweep (no
-double-count). The corpus output dir excludes itself. `~/.zcode/workspace` session-pattern
-files are included but the corpus dir inside it is self-excluded. Generic `*.json`
-acceptance is name-gated (`session|chat|conversation|history|rollout|transcript|dialog|
-thread|completion|prompt`, `local_*`, `ses_*`, `session-*`, `meta.json`,
-`conversations*.json`, `codex.json`, `transcript.json`) so random config json is not
-swept in. Not scanned at all (out of declared scope): non-dotdir project folders on C:
-(e.g. `Cowork\` — grok Cowork *sessions* live under `~/.grok/sessions` with percent-encoded
-Cowork cwd dirs, which are included), `Documents\GitHub\*` (control repo itself), WSL/VHDX
-interiors, `D:\Backups\docker-volumes`, browser-profile caches.
+Transient sqlite sidecars `-shm/-wal/-journal` skipped (main db is the record). Home-sweep
+prunes (package/model/browser caches): `.cache .cargo .rustup .gradle .m2 .conda .npm .nuget
+.dotnet .vscode-server* .android .docker .ollama .lmstudio .VirtualBox
+.ScreamingFrogSEOSpider .kivy .msf4 go …` (full set in `build_corpus.py::HOME_SWEEP_PRUNE`).
+D: depth-2 discovery prunes (61 names, `build_corpus.py::D_PRUNE`; `agentchattr` REMOVED
+from it this refresh). `D:\Backups` prunes `docker-volumes/images`. Corpus dir self-excluded.
+Generic `*.json` acceptance is name-gated (session/chat/conversation/history/rollout/
+transcript/dialog/thread/completion/prompt, `local_*`, `ses_*`, `session-*`, `meta.json`,
+`conversations*.json`, `codex.json`, `transcript.json`). Not scanned: non-dotdir project
+folders on C: outside named roots, `Documents\GitHub\*`, WSL/VHDX interiors, browser-profile
+caches, `D:\verdict-archive` (web crawl).
 
-## 10. Keeping the corpus current
+## 7. Verification receipts (executed this refresh)
+
+- **Determinism (hashing)**: 25 independent re-hashes vs manifest sha256 — 12 random jsonl
+  (seed 42) + stratified 3×zst, 3×gz, 3×json, 3×sqlite (seed 7) + 1 grok session-dir Merkle
+  (18 files) recomputed from scratch — **25/25 MATCH, 0 mismatches** (commands in build log).
+- **Grok disk recount**: on-disk session dirs 3,416 == manifest grok records 3,416.
+- **Tar**: vault copy sha `f44910f341ba31f4…` == vanished original's sha; members 2,186 /
+  jsonl_members 1,514 listed via streamed headers, never extracted.
+- **Incrementality**: warm runs `hashed=92 reused=155,746`, `hashed=71 reused=155,781`,
+  `hashed=140 reused=155,785`, errors=0 — ≥99.9 % cache skip.
+- **Missing-history**: 7,705 missing records retained with full metadata (incl. sha256).
+- **zst**: scan.log `zstandard=True`; live codex rollouts hashed as compressed bytes,
+  parsed after decompression.
+- **Interrupted-run safety**: a killed mid-scan run (23:08, exit -1) lost nothing — the next
+  run resumed from the 5,000-record checkpoint and completed.
+- Full timestamped log: `scan.log`.
+
+## 8. Keeping the corpus current (re-run instructions)
 
 ```cmd
-cd C:\Users\Prekzursil\.zcode\workspace\default\tss\tsis-deepdive\corpus
-python build_corpus.py --update                # ~2-5 min when little changed (tar is cached too)
-python build_corpus.py --update --parse-budget-gb 0   # unlimited: fills deferred parses
-python build_corpus.py --roots "codex"         # touch a subset only
+cd C:\Users\Prekzursil\.zcode\workspace\default\tsis\agent-evaluation\corpus
+python build_corpus.py --update                      # warm re-scan (~5-10 min)
+python build_corpus.py --update --parse-budget-gb 0  # unlimited: fills deferred parses
+python build_corpus.py --roots "codex"               # touch a subset only
 ```
 
-- Suggested cadence: **daily** (or after heavy session days) — the first run took ~33 min
-  cold; warm re-runs are minutes (receipt §7).
-- Parsing: first run used a 40 GiB decompressed budget (68,633 parsed / 51,548 deferred).
-  Each `--update` re-attempts deferred files with a fresh budget, so coverage converges
-  without ever re-reading unchanged files. `parse_ok=false` reasons: `deferred_budget`,
-  `size_cap` (>256 MB single file), `format_not_parsed` (sqlite/other), `no_zstd`.
-- `message_count` semantics: count of valid JSON-object lines (jsonl/zst/gz) or list/dict
-  entries (json) — a line/record count, not a strict user-turn count; `first_ts/last_ts`
-  from common timestamp fields. Directory records aggregate their conversation jsonl.
-- Safety: sources are only ever read. The state cache (`.state.json`) is written with
-  merged checkpoints every 5,000 records, so even a killed run loses nothing.
+Suggested cadence: **daily** or after heavy session days. Each `--update` re-attempts
+deferred parses with a fresh 40 GiB budget, so parse coverage converges (99,784 parsed /
+50,074 deferred after 3 runs). `message_count` = valid JSON-object lines (jsonl/zst/gz) or
+list/dict entries (json) — record counts, not strict user turns. The scan is read-only,
+timestamped and re-runnable by design; concurrent vault pipelines writing during a scan
+manifest as growth (§5d), never as loss.

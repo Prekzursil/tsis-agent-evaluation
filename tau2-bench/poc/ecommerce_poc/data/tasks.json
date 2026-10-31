@@ -1,0 +1,845 @@
+[
+  {
+    "id": "ecomm_return_001",
+    "description": {
+      "purpose": "Partial return: agent must return the eligible item, exclude the final-sale item, and explain why.",
+      "relevant_policies": "Returns policy sections 1.1-1.5 (30-day window, final-sale exclusion, original payment method, verify before acting).",
+      "notes": "Single-control; reward = DB state (reference trajectory) + communicated info. Positive task."
+    },
+    "user_scenario": {
+      "persona": "Friendly but slightly confused shopper who thinks everything in the order can be returned.",
+      "instructions": {
+        "task_instructions": "You are detail-oriented and want everything resolved in one call. If the agent explains an item cannot be returned, accept the explanation gracefully.",
+        "domain": "ecommerce_poc",
+        "reason_for_call": "You want to return everything from order #AO-1001: the Trail Runner 2.0 Shoes and the two pairs of Merino Hiking Socks.",
+        "known_info": "You are Elena Fischer, email elena.fischer@example.com. The order was delivered on 2026-10-08.",
+        "unknown_info": "You do not know that the socks were marked final-sale."
+      }
+    },
+    "ticket": "Customer Elena Fischer wants to return all items of order #AO-1001; the socks are final-sale and must be excluded with an explanation.",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "ret_001_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "elena.fischer@example.com"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "ret_001_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#AO-1001"
+          },
+          "info": "Read the order to check return eligibility"
+        },
+        {
+          "action_id": "ret_001_2",
+          "name": "return_order_items",
+          "arguments": {
+            "order_id": "#AO-1001",
+            "item_ids": ["it_1001_1"]
+          },
+          "info": "Return only the eligible (non-final-sale) shoes"
+        }
+      ],
+      "communicate_info": ["final", "129.00"],
+      "nl_assertions": null,
+      "env_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "annotations": null
+  },
+  {
+    "id": "ecomm_return_002",
+    "description": {
+      "purpose": "Return outside the 30-day window: agent must verify, decline the return, and explain the closed window.",
+      "relevant_policies": "Returns policy sections 1.1 and 1.5.",
+      "notes": "Decline task; reward = DB state unchanged (reads only) + communicated explanation."
+    },
+    "user_scenario": {
+      "persona": "Apologetic customer who bought boots six weeks ago and only now decided they do not fit.",
+      "instructions": {
+        "task_instructions": "You accept a clear refusal but want to know exactly why.",
+        "domain": "ecommerce_poc",
+        "reason_for_call": "You want to return the Ridgeline Hiking Boots from order #AO-1004 for a refund.",
+        "known_info": "You are Tom Novak, email tom.novak@example.com. The boots were delivered on 2026-09-02.",
+        "unknown_info": "You do not know the store's return window is 30 days."
+      }
+    },
+    "ticket": "Customer Tom Novak wants to return boots delivered 2026-09-02 (46 days ago); outside the 30-day window, must be declined with an explanation.",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "ret_002_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "tom.novak@example.com"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "ret_002_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#AO-1004"
+          },
+          "info": "Read the order to check the delivery date"
+        }
+      ],
+      "communicate_info": ["30", "window"],
+      "nl_assertions": null,
+      "env_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "annotations": null
+  },
+  {
+    "id": "ecomm_return_003",
+    "description": {
+      "purpose": "Return attempt on an order that has not shipped yet: agent must decline because only delivered orders can be returned.",
+      "relevant_policies": "Returns policy sections 1.3 and 1.5.",
+      "notes": "Decline task; reward = DB state unchanged + communicated explanation."
+    },
+    "user_scenario": {
+      "persona": "Impatient customer who changed their mind about a headlamp minutes after ordering.",
+      "instructions": {
+        "task_instructions": "You want your money back now and need the agent to explain what is possible.",
+        "domain": "ecommerce_poc",
+        "reason_for_call": "You want to return the Glacier Headlamp from order #AO-1008 right away.",
+        "known_info": "You are Elena Fischer, email elena.fischer@example.com. The order is still being prepared.",
+        "unknown_info": "You do not know that unshipped orders cannot be 'returned'."
+      }
+    },
+    "ticket": "Customer Elena Fischer wants to return an item from order #AO-1008 which is still processing; must be declined with an explanation.",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "ret_003_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "elena.fischer@example.com"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "ret_003_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#AO-1008"
+          },
+          "info": "Read the order status"
+        }
+      ],
+      "communicate_info": ["processing", "shipped"],
+      "nl_assertions": null,
+      "env_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "annotations": null
+  },
+  {
+    "id": "ecomm_return_004",
+    "description": {
+      "purpose": "Lost-package claim inside the 14-day window: agent must refund the full order value INCLUDING the shipping fee.",
+      "relevant_policies": "Lost packages sections 2.1-2.4.",
+      "notes": "Positive task; the express fee ($12.90) must be included in the refund ($220.00 + $12.90 = $232.90)."
+    },
+    "user_scenario": {
+      "persona": "Worried customer whose tracking says delivered but who has seen nothing.",
+      "instructions": {
+        "task_instructions": "You are certain nothing arrived. You checked with neighbors and the building entrance. You want this solved today.",
+        "domain": "ecommerce_poc",
+        "reason_for_call": "Order #AO-1007 shows as delivered on 2026-10-13 but the sleeping bag never arrived. You want your money back.",
+        "known_info": "You are Nina Petrova, email nina.petrova@example.com. You paid for express shipping on this order.",
+        "unknown_info": "You do not know the store's lost-package claim rules."
+      }
+    },
+    "ticket": "Customer Nina Petrova reports order #AO-1007 (delivered 2026-10-13, 5 days ago) never arrived; valid lost-package claim, refund must be $232.90 including the $12.90 express fee.",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "ret_004_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "nina.petrova@example.com"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "ret_004_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#AO-1007"
+          },
+          "info": "Read the order and delivery date"
+        },
+        {
+          "action_id": "ret_004_2",
+          "name": "refund_lost_package",
+          "arguments": {
+            "order_id": "#AO-1007"
+          },
+          "info": "File the lost-package claim within the 14-day window"
+        }
+      ],
+      "communicate_info": ["232.9", "shipping fee"],
+      "nl_assertions": null,
+      "env_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "annotations": null
+  },
+  {
+    "id": "ecomm_vat_001",
+    "description": {
+      "purpose": "Dual-control VAT invoice repair: the fix requires the USER to correct the VAT id in their own account app AND the agent to re-issue the invoice.",
+      "relevant_policies": "VAT invoices sections 5.1-5.3 (valid format, customer-owned profile edits).",
+      "notes": "Dual-control task; reward = environment assertions on BOTH databases, telecom-style. The correct VAT id (IT7654321) is known only to the user; the saved one (IT1234567) is stale."
+    },
+    "user_scenario": {
+      "persona": "Small-business owner who is precise about paperwork but assumes the shop already has the right VAT details.",
+      "instructions": {
+        "task_instructions": "You want the invoice fixed in this call. If the agent asks you to check or update the VAT id saved in your account, open the app and do it. Only use the account app when the agent asks.",
+        "domain": "ecommerce_poc",
+        "reason_for_call": "You need a proper VAT invoice for order #AO-1002, but the invoice never arrived because the VAT id on file is outdated.",
+        "known_info": "You are Marco Bianchi, email marco.bianchi@example.com. Your company's registered VAT id is IT7654321.",
+        "unknown_info": "You do not know which VAT id is currently saved in your account."
+      }
+    },
+    "ticket": "Customer Marco Bianchi needs a VAT invoice for order #AO-1002; his account has a stale VAT id that he must update himself before the agent can issue the invoice.",
+    "initial_state": {
+      "initialization_data": null,
+      "initialization_actions": [
+        {
+          "env_type": "user",
+          "func_name": "login_as",
+          "arguments": {
+            "user_id": "cust_2207"
+          }
+        },
+        {
+          "env_type": "user",
+          "func_name": "set_saved_vat_id",
+          "arguments": {
+            "user_id": "cust_2207",
+            "vat_id": "IT1234567"
+          }
+        },
+        {
+          "env_type": "assistant",
+          "func_name": "reset_invoice",
+          "arguments": {
+            "order_id": "#AO-1002"
+          }
+        }
+      ],
+      "message_history": null
+    },
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "vat_001_0",
+          "name": "find_user_by_email",
+          "requestor": "assistant",
+          "arguments": {
+            "email": "marco.bianchi@example.com"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "vat_001_1",
+          "name": "get_order_details",
+          "requestor": "assistant",
+          "arguments": {
+            "order_id": "#AO-1002"
+          },
+          "info": "Read the order"
+        },
+        {
+          "action_id": "vat_001_2",
+          "name": "update_saved_vat_id",
+          "requestor": "user",
+          "arguments": {
+            "vat_id": "IT7654321"
+          },
+          "info": "User corrects the VAT id in their own account app"
+        },
+        {
+          "action_id": "vat_001_3",
+          "name": "issue_invoice_with_vat",
+          "requestor": "assistant",
+          "arguments": {
+            "order_id": "#AO-1002",
+            "vat_id": "IT7654321"
+          },
+          "info": "Agent issues the invoice with the corrected VAT id"
+        }
+      ],
+      "communicate_info": null,
+      "nl_assertions": null,
+      "env_assertions": [
+        {
+          "env_type": "assistant",
+          "func_name": "assert_invoice_issued",
+          "arguments": {
+            "order_id": "#AO-1002",
+            "expected_vat_id": "IT7654321"
+          },
+          "assert_value": true,
+          "message": "The VAT invoice for #AO-1002 must be issued with VAT id IT7654321"
+        },
+        {
+          "env_type": "user",
+          "func_name": "assert_saved_vat_id",
+          "arguments": {
+            "user_id": "cust_2207",
+            "expected_vat_id": "IT7654321"
+          },
+          "assert_value": true,
+          "message": "The VAT id saved in the customer's account must be corrected to IT7654321"
+        }
+      ],
+      "reward_basis": ["ENV_ASSERTION"]
+    },
+    "annotations": null
+  },
+  {
+    "id": "ecomm_vat_002",
+    "description": {
+      "purpose": "Invalid VAT id: the agent must refuse to issue with a malformed id, explain the exact format rule, and only issue after the customer fixes the id in their app.",
+      "relevant_policies": "VAT invoices sections 5.1-5.3.",
+      "notes": "Dual-control task with rule-enforcement pressure: the user first offers the malformed id IT765432 (8 chars). The valid id DE9876543 must end up saved in the app and on the invoice."
+    },
+    "user_scenario": {
+      "persona": "Hurried business customer who reads the VAT id off a crumpled note and gets it wrong the first time.",
+      "instructions": {
+        "task_instructions": "You first give the agent the VAT id IT765432 (that is what your note says). If the agent tells you the id is invalid and asks you to check and fix the one saved in your account app, open the app, correct it to your real registered id DE9876543, and confirm. Only use the account app when the agent asks.",
+        "domain": "ecommerce_poc",
+        "reason_for_call": "You need a VAT invoice for order #AO-1012 today; accounting is waiting for it.",
+        "known_info": "You are Marco Bianchi, email marco.bianchi@example.com. Your company's real registered VAT id is DE9876543 (your note with IT765432 is outdated).",
+        "unknown_info": "You do not know what VAT id is currently saved in your account."
+      }
+    },
+    "ticket": "Customer Marco Bianchi needs a VAT invoice for order #AO-1012; he first supplies a malformed VAT id (IT765432) that must be rejected with the format rule, then corrects his saved id to DE9876543.",
+    "initial_state": {
+      "initialization_data": null,
+      "initialization_actions": [
+        {
+          "env_type": "user",
+          "func_name": "login_as",
+          "arguments": {
+            "user_id": "cust_2207"
+          }
+        },
+        {
+          "env_type": "user",
+          "func_name": "set_saved_vat_id",
+          "arguments": {
+            "user_id": "cust_2207",
+            "vat_id": "IT1234567"
+          }
+        },
+        {
+          "env_type": "assistant",
+          "func_name": "reset_invoice",
+          "arguments": {
+            "order_id": "#AO-1012"
+          }
+        }
+      ],
+      "message_history": null
+    },
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "vat_002_0",
+          "name": "find_user_by_email",
+          "requestor": "assistant",
+          "arguments": {
+            "email": "marco.bianchi@example.com"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "vat_002_1",
+          "name": "get_order_details",
+          "requestor": "assistant",
+          "arguments": {
+            "order_id": "#AO-1012"
+          },
+          "info": "Read the order"
+        },
+        {
+          "action_id": "vat_002_2",
+          "name": "update_saved_vat_id",
+          "requestor": "user",
+          "arguments": {
+            "vat_id": "DE9876543"
+          },
+          "info": "User corrects the saved VAT id to the real registered one"
+        },
+        {
+          "action_id": "vat_002_3",
+          "name": "issue_invoice_with_vat",
+          "requestor": "assistant",
+          "arguments": {
+            "order_id": "#AO-1012",
+            "vat_id": "DE9876543"
+          },
+          "info": "Agent issues the invoice only with the valid corrected id"
+        }
+      ],
+      "communicate_info": ["9"],
+      "nl_assertions": null,
+      "env_assertions": [
+        {
+          "env_type": "assistant",
+          "func_name": "assert_invoice_issued",
+          "arguments": {
+            "order_id": "#AO-1012",
+            "expected_vat_id": "DE9876543"
+          },
+          "assert_value": true,
+          "message": "The VAT invoice for #AO-1012 must be issued with VAT id DE9876543"
+        },
+        {
+          "env_type": "user",
+          "func_name": "assert_saved_vat_id",
+          "arguments": {
+            "user_id": "cust_2207",
+            "expected_vat_id": "DE9876543"
+          },
+          "assert_value": true,
+          "message": "The VAT id saved in the customer's account must be DE9876543"
+        }
+      ],
+      "reward_basis": ["ENV_ASSERTION", "COMMUNICATE"]
+    },
+    "annotations": null
+  },
+  {
+    "id": "ecomm_coupon_001",
+    "description": {
+      "purpose": "Apply a valid percentage coupon: agent must verify the terms, apply it, and state the exact discount.",
+      "relevant_policies": "Coupons sections 3.1-3.4.",
+      "notes": "Positive task; WELCOME10 (10%, min $50, not expired, not yet used) on a $310.00 subtotal -> $31.00 discount."
+    },
+    "user_scenario": {
+      "persona": "Enthusiastic new customer who just received a welcome email with a coupon.",
+      "instructions": {
+        "task_instructions": "You want the coupon applied to your tent order in this call.",
+        "domain": "ecommerce_poc",
+        "reason_for_call": "You want your WELCOME10 coupon applied to order #AO-1003 (the Alpine Dome Tent).",
+        "known_info": "You are Priya Sharma, email priya.sharma@example.com. Your coupon code is WELCOME10.",
+        "unknown_info": "You do not know the exact discount terms."
+      }
+    },
+    "ticket": "Customer Priya Sharma wants coupon WELCOME10 applied to order #AO-1003; valid, discount must be $31.00 off the $310.00 subtotal.",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "cpn_001_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "priya.sharma@example.com"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "cpn_001_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#AO-1003"
+          },
+          "info": "Read the order subtotal"
+        },
+        {
+          "action_id": "cpn_001_2",
+          "name": "get_coupon_details",
+          "arguments": {
+            "coupon_code": "WELCOME10"
+          },
+          "info": "Verify the coupon terms before applying"
+        },
+        {
+          "action_id": "cpn_001_3",
+          "name": "apply_coupon_to_order",
+          "arguments": {
+            "order_id": "#AO-1003",
+            "coupon_code": "WELCOME10"
+          },
+          "info": "Apply the valid coupon"
+        }
+      ],
+      "communicate_info": ["WELCOME10", "31.0"],
+      "nl_assertions": null,
+      "env_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "annotations": null
+  },
+  {
+    "id": "ecomm_coupon_002",
+    "description": {
+      "purpose": "Expired coupon: agent must verify the terms, decline, and explain the expiry.",
+      "relevant_policies": "Coupons sections 3.1-3.3.",
+      "notes": "Decline task; SAVE25 expired 2026-09-30 (today is 2026-10-18). No write may happen."
+    },
+    "user_scenario": {
+      "persona": "Bargain hunter holding an old newsletter coupon.",
+      "instructions": {
+        "task_instructions": "You push once for an exception; if refused, accept it.",
+        "domain": "ecommerce_poc",
+        "reason_for_call": "You want coupon SAVE25 ($25 off) applied to order #AO-1009 (the Summit Windstopper Gloves).",
+        "known_info": "You are Marco Bianchi, email marco.bianchi@example.com. Your coupon code is SAVE25.",
+        "unknown_info": "You do not know the coupon expired."
+      }
+    },
+    "ticket": "Customer Marco Bianchi wants expired coupon SAVE25 (expired 2026-09-30) applied to order #AO-1009; must be declined with the expiry explained.",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "cpn_002_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "marco.bianchi@example.com"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "cpn_002_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#AO-1009"
+          },
+          "info": "Read the order"
+        },
+        {
+          "action_id": "cpn_002_2",
+          "name": "get_coupon_details",
+          "arguments": {
+            "coupon_code": "SAVE25"
+          },
+          "info": "Verify the coupon terms"
+        }
+      ],
+      "communicate_info": ["SAVE25", "expired"],
+      "nl_assertions": null,
+      "env_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "annotations": null
+  },
+  {
+    "id": "ecomm_coupon_003",
+    "description": {
+      "purpose": "Coupon below minimum subtotal: agent must verify, decline, and explain the minimum-spend rule.",
+      "relevant_policies": "Coupons sections 3.1-3.3.",
+      "notes": "Decline task; GEAR15 requires a $200.00 minimum subtotal, the order subtotal is $39.00."
+    },
+    "user_scenario": {
+      "persona": "Casual shopper who got a coupon code from a friend.",
+      "instructions": {
+        "task_instructions": "You accept a refusal if the rule is explained clearly.",
+        "domain": "ecommerce_poc",
+        "reason_for_call": "You want coupon GEAR15 (15% off) applied to order #AO-1010 (the Trailflow Water Bottle).",
+        "known_info": "You are Lucas Meyer, email lucas.meyer@example.com. Your coupon code is GEAR15.",
+        "unknown_info": "You do not know the coupon has a minimum spend."
+      }
+    },
+    "ticket": "Customer Lucas Meyer wants coupon GEAR15 (min subtotal $200.00) applied to order #AO-1010 (subtotal $39.00); must be declined with the minimum-spend rule explained.",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "cpn_003_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "lucas.meyer@example.com"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "cpn_003_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#AO-1010"
+          },
+          "info": "Read the order subtotal"
+        },
+        {
+          "action_id": "cpn_003_2",
+          "name": "get_coupon_details",
+          "arguments": {
+            "coupon_code": "GEAR15"
+          },
+          "info": "Verify the coupon terms"
+        }
+      ],
+      "communicate_info": ["GEAR15", "minimum"],
+      "nl_assertions": null,
+      "env_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "annotations": null
+  },
+  {
+    "id": "ecomm_coupon_004",
+    "description": {
+      "purpose": "One-per-customer coupon already redeemed: agent must verify, decline, and explain the single-use rule.",
+      "relevant_policies": "Coupons sections 3.1-3.3.",
+      "notes": "Decline task; LOYALTY30 is active with met minimum but cust_5591 already redeemed it."
+    },
+    "user_scenario": {
+      "persona": "Loyal repeat customer who remembers getting a loyalty coupon a while ago.",
+      "instructions": {
+        "task_instructions": "You used LOYALTY30 once before on an older order. You accept the refusal if the agent explains it.",
+        "domain": "ecommerce_poc",
+        "reason_for_call": "You want coupon LOYALTY30 ($30 off) applied to order #AO-1011 (the Alpine 65L Expedition Pack).",
+        "known_info": "You are Aisha Khan, email aisha.khan@example.com. Your coupon code is LOYALTY30.",
+        "unknown_info": "You do not remember whether you already used it."
+      }
+    },
+    "ticket": "Customer Aisha Khan wants coupon LOYALTY30 applied to order #AO-1011; the coupon is one-per-customer and already redeemed by her, must be declined with the rule explained.",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "cpn_004_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "aisha.khan@example.com"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "cpn_004_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#AO-1011"
+          },
+          "info": "Read the order"
+        },
+        {
+          "action_id": "cpn_004_2",
+          "name": "get_coupon_details",
+          "arguments": {
+            "coupon_code": "LOYALTY30"
+          },
+          "info": "Verify the coupon terms and redemption history"
+        }
+      ],
+      "communicate_info": ["LOYALTY30", "already"],
+      "nl_assertions": null,
+      "env_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "annotations": null
+  },
+  {
+    "id": "ecomm_shipping_001",
+    "description": {
+      "purpose": "Dual-control address change: the USER must update the saved address in their own app AND the agent must re-route the still-processing order.",
+      "relevant_policies": "Shipping sections 4.1-4.2 (processing-only, customer-owned profile edits).",
+      "notes": "Dual-control task; reward = environment assertions on BOTH databases. The order and the app both hold the stale address; the new address is known only to the user."
+    },
+    "user_scenario": {
+      "persona": "Customer who recently moved and is anxious the crampons will ship to the old flat.",
+      "instructions": {
+        "task_instructions": "You want the order re-routed today. If the agent asks you to update the address saved in your account app, open the app and change it to Bahnhofstrasse 45, 60313 Frankfurt, Germany. Only use the account app when the agent asks.",
+        "domain": "ecommerce_poc",
+        "reason_for_call": "Order #AO-1005 (Steel Crampons) is about to ship to your old address (Hauptstrasse 12, 60311 Frankfurt); you moved and need it sent to the new one.",
+        "known_info": "You are Aisha Khan, email aisha.khan@example.com. Your new address is Bahnhofstrasse 45, 60313 Frankfurt, Germany.",
+        "unknown_info": "You do not know which address is currently saved in your account app."
+      }
+    },
+    "ticket": "Customer Aisha Khan needs processing order #AO-1005 re-routed from Hauptstrasse 12 to Bahnhofstrasse 45 (60313 Frankfurt); she must update the saved address in her app herself, then the agent re-routes the order.",
+    "initial_state": {
+      "initialization_data": null,
+      "initialization_actions": [
+        {
+          "env_type": "user",
+          "func_name": "login_as",
+          "arguments": {
+            "user_id": "cust_5591"
+          }
+        }
+      ],
+      "message_history": null
+    },
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "shp_001_0",
+          "name": "find_user_by_email",
+          "requestor": "assistant",
+          "arguments": {
+            "email": "aisha.khan@example.com"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "shp_001_1",
+          "name": "get_order_details",
+          "requestor": "assistant",
+          "arguments": {
+            "order_id": "#AO-1005"
+          },
+          "info": "Read the order status and current address"
+        },
+        {
+          "action_id": "shp_001_2",
+          "name": "update_saved_address",
+          "requestor": "user",
+          "arguments": {
+            "address": "Bahnhofstrasse 45, 60313 Frankfurt, Germany"
+          },
+          "info": "User updates the saved address in their own app"
+        },
+        {
+          "action_id": "shp_001_3",
+          "name": "change_shipping_address",
+          "requestor": "assistant",
+          "arguments": {
+            "order_id": "#AO-1005",
+            "new_address": "Bahnhofstrasse 45, 60313 Frankfurt, Germany"
+          },
+          "info": "Agent re-routes the processing order to the confirmed new address"
+        }
+      ],
+      "communicate_info": null,
+      "nl_assertions": null,
+      "env_assertions": [
+        {
+          "env_type": "assistant",
+          "func_name": "assert_order_address",
+          "arguments": {
+            "order_id": "#AO-1005",
+            "expected_address": "Bahnhofstrasse 45, 60313 Frankfurt, Germany"
+          },
+          "assert_value": true,
+          "message": "Order #AO-1005 must be re-routed to Bahnhofstrasse 45, 60313 Frankfurt, Germany"
+        },
+        {
+          "env_type": "user",
+          "func_name": "assert_saved_address",
+          "arguments": {
+            "user_id": "cust_5591",
+            "expected_address": "Bahnhofstrasse 45, 60313 Frankfurt, Germany"
+          },
+          "assert_value": true,
+          "message": "The address saved in the customer's account must be Bahnhofstrasse 45, 60313 Frankfurt, Germany"
+        }
+      ],
+      "reward_basis": ["ENV_ASSERTION"]
+    },
+    "annotations": null
+  },
+  {
+    "id": "ecomm_shipping_002",
+    "description": {
+      "purpose": "Express upgrade on a processing order: agent must state the flat $12.90 fee and apply the upgrade.",
+      "relevant_policies": "Shipping sections 4.3.",
+      "notes": "Positive task; upgrade fee $12.90 must be communicated."
+    },
+    "user_scenario": {
+      "persona": "Excited customer leaving for a trek in four days who needs the backpack fast.",
+      "instructions": {
+        "task_instructions": "You agree to any reasonable fee for faster shipping.",
+        "domain": "ecommerce_poc",
+        "reason_for_call": "You want order #AO-1006 (Featherlight 40L Backpack) upgraded to express shipping.",
+        "known_info": "You are Lucas Meyer, email lucas.meyer@example.com.",
+        "unknown_info": "You do not know the express fee."
+      }
+    },
+    "ticket": "Customer Lucas Meyer wants processing order #AO-1006 upgraded to express shipping; the flat $12.90 fee applies and must be communicated.",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "shp_002_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "lucas.meyer@example.com"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "shp_002_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#AO-1006"
+          },
+          "info": "Read the order status"
+        },
+        {
+          "action_id": "shp_002_2",
+          "name": "upgrade_shipping_method",
+          "arguments": {
+            "order_id": "#AO-1006"
+          },
+          "info": "Upgrade to express while still processing"
+        }
+      ],
+      "communicate_info": ["12.9", "express"],
+      "nl_assertions": null,
+      "env_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "annotations": null
+  },
+  {
+    "id": "ecomm_shipping_003",
+    "description": {
+      "purpose": "Address change on a delivered order: agent must decline and explain that addresses can only be changed while processing.",
+      "relevant_policies": "Shipping sections 4.1.",
+      "notes": "Decline task; the order was already delivered, no write may happen."
+    },
+    "user_scenario": {
+      "persona": "Customer who moved last week and only now realizes the invoice address is outdated.",
+      "instructions": {
+        "task_instructions": "You accept a refusal if the agent explains why nothing can be changed anymore.",
+        "domain": "ecommerce_poc",
+        "reason_for_call": "You want the shipping address on order #AO-1004 changed to your new address since you moved.",
+        "known_info": "You are Tom Novak, email tom.novak@example.com. The boots were delivered on 2026-09-02.",
+        "unknown_info": "You do not know the order already shipped and was delivered."
+      }
+    },
+    "ticket": "Customer Tom Novak wants the address changed on order #AO-1004 which was already delivered 2026-09-02; must be declined with an explanation.",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "shp_003_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "tom.novak@example.com"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "shp_003_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#AO-1004"
+          },
+          "info": "Read the order status"
+        }
+      ],
+      "communicate_info": ["delivered", "change"],
+      "nl_assertions": null,
+      "env_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "annotations": null
+  }
+]

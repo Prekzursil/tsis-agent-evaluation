@@ -1,0 +1,101 @@
+[project]
+name = "tsis-agent-evaluation"
+version = "1.0.0"
+description = "TSIS Agentic AI evaluation: tau2-bench dual-control reproduction (grok-4.7 + GLM-5.3, custom e-commerce domain) + MAST-14/TRAIL-20 cross-taxonomy failure study on real agent sessions."
+requires-python = ">=3.10"
+dependencies = [
+  "scipy>=1.11",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8", "pytest-cov>=5"]
+
+# ── Coverage scope (strict-zero, honestly bounded) ─────────────────────────
+# Measured at 100% line+branch:
+#   corpus/cross_taxonomy_join.py - the cross-taxonomy statistics engine
+#     (pure statistics + file-driven main(); exercised end-to-end on three
+#     synthetic fixtures: rich, degenerate-both-flagged, degenerate-all-clean)
+# Deliberately NOT in the measured scope (see CONTRIBUTING.md):
+#   corpus/build_corpus.py        - corpus builder over private session trees
+#     (filesystem-walking lane driver; its output manifest is the evidence)
+#   tau2-bench/ trail/ mastscope/ _audit/ scripts - lane drivers coupled to
+#     the uncommitted tau2-bench harness clone, private result data, and
+#     LLM API lanes; their RESULTS.md tables are the delivered evidence
+[tool.coverage.run]
+branch = true
+source = ["corpus"]
+omit = [
+  "corpus/build_corpus.py",
+  "corpus/_probe.py",
+]
+
+[tool.coverage.report]
+show_missing = true
+precision = 2
+fail_under = 100
+exclude_also = [
+  # module entry guards: exercised by direct invocation, not by the suite
+  "if __name__ == .__main__.:",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-p no:cacheprovider"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+# Lane scripts (tau2-bench/, trail/, mastscope/, _audit/) are frozen research
+# artifacts coupled to uncommitted harness/data - lint them in their own lane,
+# not in this gate. corpus/ and tests/ are fully linted.
+extend-exclude = [
+  "tau2-bench",
+  "trail",
+  "mastscope",
+  "_audit",
+  "repo",
+  "work",
+  ".venv",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# corpus/build_corpus.py is a frozen lane driver whose output manifest is the
+# evidence: style-only rules are waived (notably UP031 — rewriting %d on
+# floats to f-strings changes truncation semantics and could alter the
+# manifest). Bug-catching rules (F…) stay active.
+"corpus/build_corpus.py" = ["UP031", "UP015", "UP009", "B007", "B033"]
+
+[tool.ruff.format]
+# Same freeze rationale as extend-exclude above.
+exclude = [
+  "tau2-bench",
+  "trail",
+  "mastscope",
+  "_audit",
+  "repo",
+  "work",
+  ".venv",
+]
+
+[tool.basedpyright]
+typeCheckingMode = "standard"
+pythonVersion = "3.10"
+# Lane scripts import the uncommitted tau2-bench harness clone via runtime
+# sys.path insertion; corpus/build_corpus.py is the frozen corpus-builder
+# lane driver. Both classes are excluded from the type gate for those
+# documented reasons; corpus/cross_taxonomy_join.py and tests/ ARE gated.
+exclude = [
+  "tau2-bench",
+  "trail",
+  "mastscope",
+  "_audit",
+  "repo",
+  "work",
+  ".venv",
+  "corpus/build_corpus.py",
+]
+reportMissingImports = "warning"

@@ -1,0 +1,716 @@
+[
+  {
+    "id": "coupon_task_1",
+    "description": {
+      "purpose": "Tests the coupon rule family (no coupon tools exist in the shipped retail domain): apply a valid percentage coupon to a pending order, respecting minimum order value and expiry.",
+      "relevant_policies": "Coupon Policy; Order Modification Policy",
+      "notes": "Coupon WELCOME10 (10%, min 50 EUR, expires 2027-12-31) applied to pending order #ORD-1001 with subtotal 69.75 EUR: discount 6.98 EUR, new total 62.77 EUR."
+    },
+    "user_scenario": {
+      "persona": "Friendly retail customer who is unsure whether coupons can be applied after checkout.",
+      "instructions": {
+        "task_instructions": "You are Anna Meier, a retail customer of the store. You want your WELCOME10 coupon applied to order #ORD-1001 before it ships. If the agent tells you the new total, confirm it sounds right (about ten percent off). Once the agent confirms the coupon is applied, thank them and end the chat.",
+        "domain": "e-commerce support",
+        "reason_for_call": "I placed order #ORD-1001 yesterday and I have a WELCOME10 coupon I never used. Can you apply it to that order before it ships?",
+        "known_info": "You are Anna Meier (customer CUST-1001, email anna.meier@example.com). Your order number is #ORD-1001. Your coupon code is WELCOME10.",
+        "unknown_info": "You do not remember the coupon's minimum order value or its expiry date."
+      }
+    },
+    "ticket": null,
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "coupon_task_1_0",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#ORD-1001"
+          },
+          "info": null
+        },
+        {
+          "action_id": "coupon_task_1_1",
+          "name": "apply_coupon_to_order",
+          "arguments": {
+            "order_id": "#ORD-1001",
+            "coupon_code": "WELCOME10"
+          },
+          "info": null
+        }
+      ],
+      "communicate_info": [],
+      "env_assertions": null,
+      "nl_assertions": null,
+      "reward_basis": ["DB"]
+    },
+    "issues": null
+  },
+  {
+    "id": "vat_task_1",
+    "description": {
+      "purpose": "Tests the VAT rule family (no VAT/tax logic exists in the shipped retail domain): re-issue a B2B invoice with the customer's VAT ID printed on it.",
+      "relevant_policies": "Invoicing and VAT Policy",
+      "notes": "Order #ORD-2002 (delivered, 189.00 EUR gross, DE 19% VAT) already has invoice INV-2002 without a VAT ID; the correct end state is the same invoice re-issued with vat_id DE123456789 (net 158.82, VAT 30.18)."
+    },
+    "user_scenario": {
+      "persona": "Busy small-business owner who needs paperwork fixed quickly and gets straight to the point.",
+      "instructions": {
+        "task_instructions": "You are Bruno Schulz, the owner of a small German company buying office equipment from the store. Your accountant cannot book the invoice for order #ORD-2002 because it has no VAT ID on it. Ask the agent to re-issue the invoice with your company VAT ID DE123456789. Once the agent confirms the new invoice has the VAT ID on it, thank them and end the chat.",
+        "domain": "e-commerce support",
+        "reason_for_call": "Our invoice for order #ORD-2002 is missing our VAT ID, so our accounting cannot book it. Please re-issue the invoice with our VAT ID.",
+        "known_info": "You are Bruno Schulz (customer CUST-2002, email b.schulz@example-firma.de). Order number #ORD-2002. Your company VAT ID is DE123456789. The order total was 189.00 EUR.",
+        "unknown_info": "You do not remember the invoice number."
+      }
+    },
+    "ticket": null,
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "vat_task_1_0",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#ORD-2002"
+          },
+          "info": null
+        },
+        {
+          "action_id": "vat_task_1_1",
+          "name": "issue_invoice_with_vat",
+          "arguments": {
+            "order_id": "#ORD-2002",
+            "vat_id": "DE123456789"
+          },
+          "info": null
+        }
+      ],
+      "communicate_info": [
+        "VAT ID",
+        "invoice"
+      ],
+      "env_assertions": null,
+      "nl_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "issues": null
+  },
+  {
+    "id": "coupon_task_2",
+    "description": {
+      "purpose": "Coupon decline path: the customer's coupon is expired, so it must NOT be applied; the agent must explain the expiry instead of writing to the order.",
+      "relevant_policies": "Coupon Policy",
+      "notes": "Coupon SAVE20 (20%, min 100 EUR) expired 2026-09-30; pending order #ORD-4004 (subtotal 84.90) must stay unchanged. Decline task: DB target equals the untouched state."
+    },
+    "user_scenario": {
+      "persona": "Polite but persistent bargain hunter who believes coupons never really expire.",
+      "instructions": {
+        "task_instructions": "You are Marco Rossi. You want the SAVE20 coupon applied to order #ORD-4004 and you are sure you got it recently. If the agent explains the coupon has expired, accept it after one polite pushback ('are you sure?') and end the chat.",
+        "domain": "e-commerce support",
+        "reason_for_call": "Hi, I want to use my SAVE20 coupon on order #ORD-4004 before it ships. It should take twenty percent off.",
+        "known_info": "You are Marco Rossi (email marco.rossi@example.it). Your order number is #ORD-4004. Your coupon code is SAVE20.",
+        "unknown_info": "You do not know the coupon expired on 2026-09-30."
+      }
+    },
+    "ticket": null,
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "coupon_task_2_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "marco.rossi@example.it"
+          },
+          "info": "Verify the customer"
+        },
+        {
+          "action_id": "coupon_task_2_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#ORD-4004"
+          },
+          "info": "Read the order state"
+        },
+        {
+          "action_id": "coupon_task_2_2",
+          "name": "get_coupon_details",
+          "arguments": {
+            "coupon_code": "SAVE20"
+          },
+          "info": "Check the coupon terms"
+        }
+      ],
+      "communicate_info": ["expired"],
+      "env_assertions": null,
+      "nl_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "issues": null
+  },
+  {
+    "id": "coupon_task_3",
+    "description": {
+      "purpose": "Coupon decline path: the order subtotal is below the coupon's minimum order value, so the coupon must NOT be applied; the agent explains the minimum.",
+      "relevant_policies": "Coupon Policy",
+      "notes": "Coupon SPRING5 (fixed 5 EUR, min 20 EUR, expires 2027-06-30) cannot be applied to pending order #ORD-5010 (subtotal 15.90 < 20). Decline task: DB target equals the untouched state."
+    },
+    "user_scenario": {
+      "persona": "Frugal shopper who reads deal forums and got the SPRING5 code from a friend.",
+      "instructions": {
+        "task_instructions": "You are Elena Fischer. You want the SPRING5 coupon applied to your small order #ORD-5010. If the agent explains the order is too small for the coupon, accept the explanation and end the chat.",
+        "domain": "e-commerce support",
+        "reason_for_call": "Hello! I have a SPRING5 code that should take five euros off. Can you apply it to order #ORD-5010 for me?",
+        "known_info": "You are Elena Fischer (email elena.fischer@example.com). Your order number is #ORD-5010. Your coupon code is SPRING5.",
+        "unknown_info": "You do not know the coupon needs a minimum order of 20 EUR."
+      }
+    },
+    "ticket": null,
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "coupon_task_3_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "elena.fischer@example.com"
+          },
+          "info": "Verify the customer"
+        },
+        {
+          "action_id": "coupon_task_3_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#ORD-5010"
+          },
+          "info": "Read the order state"
+        },
+        {
+          "action_id": "coupon_task_3_2",
+          "name": "get_coupon_details",
+          "arguments": {
+            "coupon_code": "SPRING5"
+          },
+          "info": "Check the coupon terms"
+        }
+      ],
+      "communicate_info": ["minimum"],
+      "env_assertions": null,
+      "nl_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "issues": null
+  },
+  {
+    "id": "return_task_1",
+    "description": {
+      "purpose": "Partial return with the final-sale exclusion: the agent must return only the eligible shoes, exclude the final-sale socks, and explain the exclusion.",
+      "relevant_policies": "Returns Policy (30-day window, final-sale exclusion, refund to original payment method)",
+      "notes": "Order #ORD-5005 delivered 2026-10-08 (inside the 30-day window): shoes it_5005_1 (129.00) eligible, socks it_5005_2 (final sale, 2 x 12.45) excluded. Refund 129.00 EUR to the original payment method; order stays delivered with returned_items=[it_5005_1], refund_total=129.0."
+    },
+    "user_scenario": {
+      "persona": "Friendly but slightly confused shopper who thinks everything in the order can be returned.",
+      "instructions": {
+        "task_instructions": "You are Elena Fischer and you want to return everything from order #ORD-5005: the Trail Runner 2.0 Shoes and the two pairs of Merino Hiking Socks. You are detail-oriented and want everything resolved in one call. If the agent explains an item cannot be returned, accept the explanation gracefully.",
+        "domain": "e-commerce support",
+        "reason_for_call": "I want to return everything from order #ORD-5005: the shoes and the two pairs of hiking socks. They just are not right for me.",
+        "known_info": "You are Elena Fischer (email elena.fischer@example.com). The order was delivered on 2026-10-08. The items are the Trail Runner 2.0 Shoes and two pairs of Merino Hiking Socks.",
+        "unknown_info": "You do not know that the socks were marked final-sale."
+      }
+    },
+    "ticket": "Customer Elena Fischer wants to return all items of order #ORD-5005; the socks are final-sale and must be excluded with an explanation.",
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "return_task_1_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "elena.fischer@example.com"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "return_task_1_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#ORD-5005"
+          },
+          "info": "Read the order to check return eligibility"
+        },
+        {
+          "action_id": "return_task_1_2",
+          "name": "return_order_items",
+          "arguments": {
+            "order_id": "#ORD-5005",
+            "item_ids": ["it_5005_1"]
+          },
+          "info": "Return only the eligible (non-final-sale) shoes"
+        }
+      ],
+      "communicate_info": ["final", "129.00"],
+      "env_assertions": null,
+      "nl_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "issues": null
+  },
+  {
+    "id": "return_task_2",
+    "description": {
+      "purpose": "Return-window decline: the order was delivered 50 days ago, outside the 30-day return window, so no return may be registered; the agent explains the window.",
+      "relevant_policies": "Returns Policy (30-day window)",
+      "notes": "Order #ORD-6006 delivered 2026-08-30; window ended 2026-09-29. Decline task: DB target equals the untouched state."
+    },
+    "user_scenario": {
+      "persona": "Apologetic customer who ordered a backpack for a trip that was cancelled and hopes for goodwill.",
+      "instructions": {
+        "task_instructions": "You are Farid Haddad. You want to return the hiking backpack from order #ORD-6006. If the agent tells you the return window has passed, accept it and end the chat.",
+        "domain": "e-commerce support",
+        "reason_for_call": "I'd like to return the backpack from order #ORD-6006. My trip was cancelled and I never used it.",
+        "known_info": "You are Farid Haddad (email farid.haddad@example.com). Order #ORD-6006. The backpack arrived at the end of August 2026.",
+        "unknown_info": "You do not know the exact return-window cutoff."
+      }
+    },
+    "ticket": null,
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "return_task_2_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "farid.haddad@example.com"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "return_task_2_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#ORD-6006"
+          },
+          "info": "Read the order to check the return window"
+        }
+      ],
+      "communicate_info": ["outside", "return window"],
+      "env_assertions": null,
+      "nl_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "issues": null
+  },
+  {
+    "id": "return_task_3",
+    "description": {
+      "purpose": "Full return of a delivered order inside the window: every eligible item is returned, the order flips to status returned, and the agent states the refund amount and that it goes back to the original payment method (PayPal).",
+      "relevant_policies": "Returns Policy (refund to original payment method)",
+      "notes": "Order #ORD-7007 delivered 2026-10-05: headphones it_7007_1 (95.00) and phone case it_7007_2 (19.95), both eligible. Refund 114.95 EUR via PayPal; status becomes returned."
+    },
+    "user_scenario": {
+      "persona": "Efficient online shopper who knows exactly what she wants and confirms details quickly.",
+      "instructions": {
+        "task_instructions": "You are Greta Lindqvist. You want to return BOTH items from order #ORD-7007 - the wireless headphones and the phone case - because you found a better bundle elsewhere. Confirm the refund amount when the agent states it and end the chat once the return is registered. You paid with PayPal and expect the money to go back there.",
+        "domain": "e-commerce support",
+        "reason_for_call": "I want to return everything in order #ORD-7007, the headphones and the phone case. I paid with PayPal.",
+        "known_info": "You are Greta Lindqvist (email greta.lindqvist@example.nl). Order #ORD-7007, delivered 2026-10-05. Items: wireless headphones and phone case. Paid via PayPal.",
+        "unknown_info": "You do not know the exact refund total offhand."
+      }
+    },
+    "ticket": null,
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "return_task_3_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "greta.lindqvist@example.nl"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "return_task_3_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#ORD-7007"
+          },
+          "info": "Read the order to check return eligibility"
+        },
+        {
+          "action_id": "return_task_3_2",
+          "name": "return_order_items",
+          "arguments": {
+            "order_id": "#ORD-7007",
+            "item_ids": ["it_7007_1", "it_7007_2"]
+          },
+          "info": "Return both eligible items; order becomes fully returned"
+        }
+      ],
+      "communicate_info": ["114.95", "PayPal"],
+      "env_assertions": null,
+      "nl_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "issues": null
+  },
+  {
+    "id": "vat_task_2",
+    "description": {
+      "purpose": "Wrong-country VAT rate: a French consumer's invoice was issued at the German 19% rate; the agent must re-issue it at the correct FR 20% rate and state the corrected amounts.",
+      "relevant_policies": "Invoicing and VAT Policy (rate follows country of supply)",
+      "notes": "Order #ORD-3003 (240.00 EUR gross, FR customer): invoice INV-3003 wrongly shows 0.19 (net 201.68 / VAT 38.32). Correct re-issue at FR 20%: net 200.00 / VAT 40.00, same invoice id."
+    },
+    "user_scenario": {
+      "persona": "Careful French customer who checked the invoice numbers herself and spotted the inconsistency.",
+      "instructions": {
+        "task_instructions": "You are Chloe Bernard. While filing your paperwork you noticed the invoice for order #ORD-3003 charges a 19% VAT rate, but you live in France where it should be 20%. Ask the agent to check and fix the invoice. Once the agent confirms the corrected invoice with the 20% rate, thank them and end the chat.",
+        "domain": "e-commerce support",
+        "reason_for_call": "Bonjour, the invoice for my order #ORD-3003 shows a 19% VAT rate but I'm in France - it should be 20%. Can you correct the invoice?",
+        "known_info": "You are Chloe Bernard (email chloe.bernard@example.fr). Order #ORD-3003, two silk scarves, total 240.00 EUR. French VAT is 20%.",
+        "unknown_info": "You do not know at which step the wrong rate was applied."
+      }
+    },
+    "ticket": null,
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "vat_task_2_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "chloe.bernard@example.fr"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "vat_task_2_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#ORD-3003"
+          },
+          "info": "Read the order and its wrong-rate invoice"
+        },
+        {
+          "action_id": "vat_task_2_2",
+          "name": "issue_invoice_with_vat",
+          "arguments": {
+            "order_id": "#ORD-3003"
+          },
+          "info": "Re-issue the invoice at the customer's country rate (consumer, no VAT ID)"
+        }
+      ],
+      "communicate_info": ["20%", "200.00"],
+      "env_assertions": null,
+      "nl_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "issues": null
+  },
+  {
+    "id": "vat_task_3",
+    "description": {
+      "purpose": "Malformed VAT ID decline: the customer wants a short, invalid VAT ID printed on the invoice; the agent must NOT issue with that ID and must ask the customer to double-check it.",
+      "relevant_policies": "Invoicing and VAT Policy (EU VAT ID format check)",
+      "notes": "Marco Rossi asks for VAT ID 'IT123' (invalid - too short) on invoice for order #ORD-4005. Decline task: no invoice re-issue; DB target equals the untouched state."
+    },
+    "user_scenario": {
+      "persona": "Hobby-business owner in a hurry who mixes up his tax numbers.",
+      "instructions": {
+        "task_instructions": "You are Marco Rossi and you need your company VAT ID on the invoice for order #ORD-4005. Give the ID as IT123 (you mixed it up with your tax office reference). If the agent says that number cannot be a valid VAT ID and asks you to double-check, say you will look it up and end the chat.",
+        "domain": "e-commerce support",
+        "reason_for_call": "Please add my company VAT ID to the invoice for order #ORD-4005. The ID is IT123.",
+        "known_info": "You are Marco Rossi (email marco.rossi@example.it). Order #ORD-4005 (the monitor). You believe your VAT ID is IT123.",
+        "unknown_info": "You do not know that IT123 is not a valid EU VAT ID format."
+      }
+    },
+    "ticket": null,
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "vat_task_3_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "marco.rossi@example.it"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "vat_task_3_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#ORD-4005"
+          },
+          "info": "Read the order and invoice"
+        }
+      ],
+      "communicate_info": ["VAT ID", "check"],
+      "env_assertions": null,
+      "nl_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "issues": null
+  },
+  {
+    "id": "shipping_task_1",
+    "description": {
+      "purpose": "Address change on a pending order: the agent verifies the order is still pending and updates the delivery address, confirming the new address to the customer.",
+      "relevant_policies": "Shipping Policy (address changes only while pending; delivery countries DE/FR/IT/NL/AT)",
+      "notes": "Pending order #ORD-8008 moves from Berlin to Leopoldstrasse 14, 80802 Muenchen, DE."
+    },
+    "user_scenario": {
+      "persona": "Customer who just moved flats and is worried the shipment will go to the old address.",
+      "instructions": {
+        "task_instructions": "You are Peter Novak. You moved from Berlin to Munich and order #ORD-8008 still points at the old address. Ask the agent to change the delivery address to Leopoldstrasse 14, 80802 Muenchen, Germany. Once the agent confirms the new address is saved, thank them and end the chat.",
+        "domain": "e-commerce support",
+        "reason_for_call": "I just moved - can you change the delivery address of order #ORD-8008 to Leopoldstrasse 14, 80802 Muenchen, Germany, before it ships?",
+        "known_info": "You are Peter Novak (email peter.novak@example.de). Order #ORD-8008 (desk lamp). New address: Leopoldstrasse 14, 80802 Muenchen, DE.",
+        "unknown_info": "You do not know whether the order already shipped."
+      }
+    },
+    "ticket": null,
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "shipping_task_1_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "peter.novak@example.de"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "shipping_task_1_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#ORD-8008"
+          },
+          "info": "Confirm the order is still pending"
+        },
+        {
+          "action_id": "shipping_task_1_2",
+          "name": "change_shipping_address",
+          "arguments": {
+            "order_id": "#ORD-8008",
+            "street": "Leopoldstrasse 14",
+            "city": "Muenchen",
+            "postal_code": "80802",
+            "country": "DE"
+          },
+          "info": "Update the delivery address"
+        }
+      ],
+      "communicate_info": ["updated", "Muenchen"],
+      "env_assertions": null,
+      "nl_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "issues": null
+  },
+  {
+    "id": "shipping_task_2",
+    "description": {
+      "purpose": "Express upgrade with fee: the agent upgrades a pending order to express shipping and communicates the flat 9.90 EUR fee and the new total.",
+      "relevant_policies": "Shipping Policy (express upgrade, flat 9.90 EUR fee)",
+      "notes": "Pending order #ORD-9009 (155.40) upgraded to express: shipping_cost 9.90, new total 165.30."
+    },
+    "user_scenario": {
+      "persona": "Last-minute gift buyer who needs the package before the weekend.",
+      "instructions": {
+        "task_instructions": "You are Sofia Conti. You need order #ORD-9009 (an espresso grinder, a gift) to arrive before the weekend, so ask the agent to upgrade it to express shipping. You are fine with a reasonable extra fee. Once the agent confirms the upgrade and tells you the new total, thank them and end the chat.",
+        "domain": "e-commerce support",
+        "reason_for_call": "Can you upgrade order #ORD-9009 to express shipping? It's a gift and I need it before the weekend.",
+        "known_info": "You are Sofia Conti (email sofia.conti@example.it). Order #ORD-9009, standard shipping, 155.40 EUR paid.",
+        "unknown_info": "You do not know how much the express upgrade costs."
+      }
+    },
+    "ticket": null,
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "shipping_task_2_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "sofia.conti@example.it"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "shipping_task_2_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#ORD-9009"
+          },
+          "info": "Confirm the order is pending and on standard shipping"
+        },
+        {
+          "action_id": "shipping_task_2_2",
+          "name": "upgrade_shipping_method",
+          "arguments": {
+            "order_id": "#ORD-9009",
+            "shipping_method": "express"
+          },
+          "info": "Upgrade to express with the flat fee"
+        }
+      ],
+      "communicate_info": ["express", "9.90"],
+      "env_assertions": null,
+      "nl_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "issues": null
+  },
+  {
+    "id": "shipping_task_3",
+    "description": {
+      "purpose": "Address-change decline: the order already shipped, so the address can no longer be changed; the agent explains this instead of writing.",
+      "relevant_policies": "Shipping Policy (address changes only while pending)",
+      "notes": "Order #ORD-11011 is in transit (status shipped). Decline task: DB target equals the untouched state."
+    },
+    "user_scenario": {
+      "persona": "Anxious customer on a work trip who suddenly realises the package goes to an empty flat.",
+      "instructions": {
+        "task_instructions": "You are Liam Weber. Order #ORD-11011 is on the way to your home in Leipzig but you are away for two weeks and want it redirected to your parents. If the agent explains the address cannot be changed once the order has shipped, accept it and end the chat.",
+        "domain": "e-commerce support",
+        "reason_for_call": "Order #ORD-11011 is coming to Leipzig but nobody is home for two weeks. Can you redirect it to my parents' address?",
+        "known_info": "You are Liam Weber (email liam.weber@example.de). Order #ORD-11011 (headphones), shipped a few days ago.",
+        "unknown_info": "You do not know whether shipped orders can still be re-routed."
+      }
+    },
+    "ticket": null,
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "shipping_task_3_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "liam.weber@example.de"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "shipping_task_3_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#ORD-11011"
+          },
+          "info": "Discover the order has already shipped"
+        }
+      ],
+      "communicate_info": ["shipped", "unable"],
+      "env_assertions": null,
+      "nl_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "issues": null
+  },
+  {
+    "id": "cancel_task_1",
+    "description": {
+      "purpose": "Order cancellation: a pending order is cancelled in full and the agent confirms the cancellation email.",
+      "relevant_policies": "Shipping Policy (cancellation of pending orders)",
+      "notes": "Pending order #ORD-12012 flips to status cancelled."
+    },
+    "user_scenario": {
+      "persona": "Impulse buyer with buyer's remorse who wants a clean cancellation, no alternatives.",
+      "instructions": {
+        "task_instructions": "You are Nadia Petrou. You bought the yoga mat in order #ORD-12012 on impulse and want to cancel the whole order. If the agent offers alternatives, decline politely - you just want it cancelled. Once the agent confirms the cancellation and the confirmation email, end the chat.",
+        "domain": "e-commerce support",
+        "reason_for_call": "I want to cancel order #ORD-12012 completely, please. I ordered it by mistake.",
+        "known_info": "You are Nadia Petrou (email nadia.petrou@example.nl). Order #ORD-12012 (yoga mat, 41.85 EUR).",
+        "unknown_info": "You do not know whether the order already entered packing."
+      }
+    },
+    "ticket": null,
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "cancel_task_1_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "nadia.petrou@example.nl"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "cancel_task_1_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#ORD-12012"
+          },
+          "info": "Confirm the order is still pending"
+        },
+        {
+          "action_id": "cancel_task_1_2",
+          "name": "cancel_order",
+          "arguments": {
+            "order_id": "#ORD-12012"
+          },
+          "info": "Cancel the pending order"
+        }
+      ],
+      "communicate_info": ["cancelled", "confirmation email"],
+      "env_assertions": null,
+      "nl_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "issues": null
+  },
+  {
+    "id": "lost_task_1",
+    "description": {
+      "purpose": "Lost package: an order stuck in transit qualifies for a full refund including shipping; the agent registers it and states the refund amount.",
+      "relevant_policies": "Lost Packages (full refund of order total incl. shipping, original payment method)",
+      "notes": "Order #ORD-13013 (shipped, total 38.99 incl. 4.99 shipping) flips to status refunded with refund_total 38.99."
+    },
+    "user_scenario": {
+      "persona": "Patient customer who waited two weeks past the promised delivery date and now mainly wants the money back.",
+      "instructions": {
+        "task_instructions": "You are Tom Becker. Order #ORD-13013 (mug set) was promised within a week but nothing has arrived for over two weeks and tracking never moved. Ask the agent what to do; if the agent offers a refund for the lost package, accept it and end the chat once confirmed.",
+        "domain": "e-commerce support",
+        "reason_for_call": "My order #ORD-13013 never arrived - tracking has not moved in over two weeks. I'd like my money back.",
+        "known_info": "You are Tom Becker (email tom.becker@example.de). Order #ORD-13013, placed weeks ago, never delivered, 38.99 EUR paid by card.",
+        "unknown_info": "You do not know the exact shipping status flag in the system."
+      }
+    },
+    "ticket": null,
+    "initial_state": null,
+    "evaluation_criteria": {
+      "actions": [
+        {
+          "action_id": "lost_task_1_0",
+          "name": "find_user_by_email",
+          "arguments": {
+            "email": "tom.becker@example.de"
+          },
+          "info": "Look up the customer"
+        },
+        {
+          "action_id": "lost_task_1_1",
+          "name": "get_order_details",
+          "arguments": {
+            "order_id": "#ORD-13013"
+          },
+          "info": "Confirm the order is still in transit (shipped)"
+        },
+        {
+          "action_id": "lost_task_1_2",
+          "name": "refund_lost_package",
+          "arguments": {
+            "order_id": "#ORD-13013"
+          },
+          "info": "Refund the lost package in full, shipping included"
+        }
+      ],
+      "communicate_info": ["38.99", "refund"],
+      "env_assertions": null,
+      "nl_assertions": null,
+      "reward_basis": ["DB", "COMMUNICATE"]
+    },
+    "issues": null
+  }
+]

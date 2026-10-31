@@ -1,0 +1,19 @@
+verify.py -- lane: C:\Users\Prekzursil\.zcode\workspace\default\tss\tsis-deepdive\tau2-bench
+PASS repo-cloned-official -- remote origin -> sierra-research/tau2-bench
+PASS repo-version-pinned -- pyproject version=1.0.1 (expected 1.0.1)
+PASS venv-exists -- C:\Users\Prekzursil\.zcode\workspace\default\tss\tsis-deepdive\tau2-bench\repo\.venv\Scripts\python.exe
+PASS venv-deps-import -- tau2, litellm, websockets, pytest, docstring_parser (litellm 1.81.11)
+PASS task-file-parses[mock] -- 10 tasks, required keys present
+PASS task-file-parses[airline] -- 50 tasks, required keys present
+PASS task-file-parses[retail] -- 114 tasks, required keys present
+PASS task-file-parses[telecom] -- 2285 tasks, required keys present
+FAIL poc-tasks-file-parses -- 13 POC tasks: ['ecomm_return_001', 'ecomm_return_002', 'ecomm_return_003', 'ecomm_return_004', 'ecomm_vat_001', 'ecomm_vat_002', 'ecomm_coupon_001', 'ecomm_coupon_002', 'ecomm_coupon_003', 'ecomm_coupon_004', 'ecomm_shipping_001', 'ecomm_shipping_002', 'ecomm_shipping_003']
+FAIL poc-split-file-parses -- splits=['base'], base=['ecomm_return_001', 'ecomm_return_002', 'ecomm_return_003', 'ecomm_return_004', 'ecomm_vat_001', 'ecomm_vat_002', 'ecomm_coupon_001', 'ecomm_coupon_002', 'ecomm_coupon_003', 'ecomm_coupon_004', 'ecomm_shipping_001', 'ecomm_shipping_002', 'ecomm_shipping_003']
+PASS reward-basis-data[airline] -- reward_basis counts {('DB', 'COMMUNICATE'): 50} (expected {('DB', 'COMMUNICATE'): 50})
+PASS reward-basis-data[retail] -- reward_basis counts {('DB', 'NL_ASSERTION'): 112, ('DB',): 2} (expected {('DB', 'NL_ASSERTION'): 112, ('DB',): 2})
+PASS reward-basis-data[telecom] -- reward_basis counts {('ENV_ASSERTION',): 2253, ('ENV_ASSERTION', 'ACTION'): 32} (expected {('ENV_ASSERTION',): 2253, ('ENV_ASSERTION', 'ACTION'): 32})
+PASS reward-basis-data[telecom-base-split] -- base=114 tasks, 20 ACTION-gated (expected base=114, ACTION-gated=20)
+PASS dossier-reward-basis-corrected -- research-sota.md carries the 2026-10-18 correction block with data-level counts (airline 50/50; retail 112+2; telecom 2253+32)
+FAIL poc-validates-harness-schema -- poc/load_poc.py via repo venv: exit=0, 46 PASS lines + 'ALL 11 POC CHECKS PASSED' (registry/Task schema/splits/init-state/solvability/evaluator reward 1.0-vs-0.0)
+
+VERIFY FAILED (3): ['poc-tasks-file-parses', 'poc-split-file-parses', 'poc-validates-harness-schema']
