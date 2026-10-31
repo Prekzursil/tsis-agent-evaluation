@@ -10,7 +10,10 @@ def audit_jsonl(path, name):
             recs.append(json.loads(l))
         except Exception as e:
             bad.append((i + 1, str(e)[:60]))
-    print(f"{name}: lines={len(lines)} parse_fail={len(bad)} ends_nl={raw.endswith(b'\n') if raw else 'EMPTY'}")
+    # py3.10: a backslash is not allowed inside an f-string expression part
+    # (PEP 701 lifted that only in 3.12) - hoist it out, identical output.
+    ends_nl = raw.endswith(b'\n') if raw else 'EMPTY'
+    print(f"{name}: lines={len(lines)} parse_fail={len(bad)} ends_nl={ends_nl}")
     for b in bad[:5]:
         print("   BAD:", b)
     return recs

@@ -1,0 +1,17 @@
+# Runtime + test manifest for the lean quality gate (and humans).
+#
+# The QZP lean gate installs this file before its type lane, so every import
+# the sources and the suite declare (scipy at runtime, pytest in the test
+# files) resolves under basedpyright --warnings — the gate's bar is zero
+# errors AND zero warnings, and an unresolvable import is a warning. 'pip
+# install .' cannot serve that role here: the tree is a multi-top-level
+# layout (corpus/, tests/, mastscope/, ...), which setuptools flat-layout
+# discovery refuses to build. This mirrors exactly what tsis-ci installs
+# (ci.yml "Install dependencies") and the pyproject.toml declarations:
+# scipy>=1.11 (runtime), pytest>=8 and pytest-cov>=5 (test extra).
+#
+# The gate's own coverage lane still pins its measuring tools (pytest 9.1.1,
+# pytest-cov 7.1.0, coverage 7.16.2) on top of this file.
+scipy>=1.11
+pytest>=8
+pytest-cov>=5

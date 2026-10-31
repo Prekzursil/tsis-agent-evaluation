@@ -99,3 +99,12 @@ exclude = [
   "corpus/build_corpus.py",
 ]
 reportMissingImports = "warning"
+# tests/test_cross_taxonomy_join.py inserts corpus/ into sys.path at runtime
+# before importing the module. The type checker cannot see runtime path
+# mutation, so without this the import is an unresolved-module warning and
+# the lean gate's zero-warning bar fails it. Declaring the search path makes
+# the import resolve to the REAL module (fully type-checked) - this adds
+# checking, it does not relax anything.
+executionEnvironments = [
+  { root = "tests", extraPaths = ["corpus"] },
+]
