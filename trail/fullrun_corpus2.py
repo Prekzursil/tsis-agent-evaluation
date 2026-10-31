@@ -489,7 +489,7 @@ def extract_events(text: str | None, st: str) -> tuple[list, str, dict]:
 # ---------------------------------------------------------------------------
 
 def _hexid(seed: str) -> str:
-    return hashlib.md5(seed.encode("utf-8")).hexdigest()[:16]
+    return hashlib.md5(seed.encode("utf-8"), usedforsecurity=False).hexdigest()[:16]
 
 
 def _cap(s, n):

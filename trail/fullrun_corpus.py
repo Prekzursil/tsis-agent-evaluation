@@ -35,11 +35,11 @@ HOT_SKIP_SECS = 300          # skip files modified <5 min ago (live sessions)
 
 
 def file_key(abspath: str) -> str:
-    return hashlib.sha1(abspath.encode("utf-8")).hexdigest()[:16]
+    return hashlib.sha1(abspath.encode("utf-8"), usedforsecurity=False).hexdigest()[:16]
 
 
 def hexid(seed: str) -> str:
-    return hashlib.md5(seed.encode("utf-8")).hexdigest()[:16]
+    return hashlib.md5(seed.encode("utf-8"), usedforsecurity=False).hexdigest()[:16]
 
 
 # ---------------------------------------------------------------------------
