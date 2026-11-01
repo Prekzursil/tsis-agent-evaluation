@@ -38,7 +38,8 @@ def write_manifest(path: Path, shas: list[str]) -> None:
 
 
 def write_canonical(path: Path, shas: list[str]) -> None:
-    json.dump({"annotation_set": [{"sha256": s} for s in shas]}, open(path, "w"))
+    with open(path, "w") as f:
+        json.dump({"annotation_set": [{"sha256": s} for s in shas]}, f)
 
 
 def write_mast(path: Path, rows: list[dict], blanks: int = 1) -> None:
@@ -52,7 +53,8 @@ def write_mast(path: Path, rows: list[dict], blanks: int = 1) -> None:
 def write_trail(dirp: Path, files: dict[str, dict]) -> None:
     dirp.mkdir(parents=True, exist_ok=True)
     for name, d in files.items():
-        json.dump(d, open(dirp / name, "w"))
+        with open(dirp / name, "w") as f:
+            json.dump(d, f)
 
 
 def point_module(tmp: Path, monkeypatch, mast_rows, trail_files, manifest, canon):
@@ -219,7 +221,8 @@ def rich_out(tmp_path, monkeypatch, capsys):
     )
     ctj.main()
     printed = capsys.readouterr().out
-    return json.load(open(out)), printed
+    with open(out) as f:
+        return json.load(f), printed
 
 
 def test_rich_diagnostics(rich_out):
@@ -366,7 +369,8 @@ def test_both_flagged_degenerate(tmp_path, monkeypatch, capsys):
     out_p = point_module(tmp_path, monkeypatch, rows, tf, ["a", "b"], ["a"])
     ctj.main()
     capsys.readouterr()
-    out = json.load(open(out_p))
+    with open(out_p) as f:
+        out = json.load(f)
     a = out["agreement_anyflag"]
     assert (a["both"], a["mast_only"], a["trail_only"], a["neither"]) == (2, 0, 0, 0)
     assert math.isnan(a["kappa"]) and math.isnan(a["chi2"]) and math.isnan(a["phi"])
@@ -384,7 +388,8 @@ def test_all_clean_degenerate(tmp_path, monkeypatch, capsys):
     out_p = point_module(tmp_path, monkeypatch, rows, tf, ["c"], ["c"])
     ctj.main()  # must not raise
     printed = capsys.readouterr().out
-    out = json.load(open(out_p))
+    with open(out_p) as f:
+        out = json.load(f)
     a = out["agreement_anyflag"]
     assert (a["both"], a["mast_only"], a["trail_only"], a["neither"]) == (0, 0, 0, 1)
     assert math.isnan(a["kappa"])
@@ -403,7 +408,8 @@ def test_mast_only_never_in_join(tmp_path, monkeypatch, capsys):
     out_p = point_module(tmp_path, monkeypatch, rows, tf, ["z"], ["z"])
     ctj.main()
     capsys.readouterr()
-    out = json.load(open(out_p))
+    with open(out_p) as f:
+        out = json.load(f)
     assert out["diagnostics"]["join_n"] == 0
     assert out["agreement_anyflag"]["n"] == 0
     assert out["n_full_mast_ok_hashes"] == 1
