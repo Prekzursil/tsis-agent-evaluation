@@ -1,4 +1,4 @@
-# TRAIL full-scale run — results (generated 2026-10-30 04:41 UTC)
+# TRAIL full-scale run — results (generated 2026-11-01 20:21 UTC)
 
 Lane `tss/tsis-deepdive/trail/` · Repo under test: **patronus-ai/trail-benchmark** (MIT),
 clone at `repo/`, commit `0ffbed9db859b4a66250dc783fa4dccf86869595` (2025-05-14).
@@ -101,12 +101,12 @@ checkpointed and resumable; grok-4.7 effort-low on even shards via the local
 grok bridge, nvidia/nemotron-3-ultra-550b-a55b on odd shards across 6 keys,
 OpenRouter ultra:free + glm-5.3-flash opportunistic — counts below are the
 on-disk state at generation time):**
-- unique files checkpointed: **40,798 / 40,798** (100.0%)
-- annotated OK: **24,787 / 24,949 eligible** (99.4%)
-- manifest records covered by a label: 121,965 /
-  124,327; OK-annotation inherited by
-  87,909 records; mean path
-  multiplicity of labelled hashes 2.99.
+- unique files checkpointed: **40,739 / 40,798** (99.9%)
+- annotated OK: **24,777 / 24,949 eligible** (99.3%)
+- manifest records covered by a label: 126,705 /
+  163,681; OK-annotation inherited by
+  89,608 records; mean path
+  multiplicity of labelled hashes 3.11.
 
 ### Bounded sensitivity extension (owner revised order 2026-10-20)
 
@@ -118,33 +118,34 @@ Extension labels carry `ext: sensitivity-ext`; single model `glm-5.3-flash`; que
 
 Owner expansion order 2026-10-21 (grok-lane economics): one instrument, one model — grok-4.7 (reasoning_effort=low) — over every canonical target, checkpointed per sha256 in `work/fullrun/corpus2_labels_b/` (`fullrun_batchb_grok.py`, 14 workers, 429-jitter requeue via the local grok bridge; fleet live-queried: 1 enabled account, maxConcurrent 8).
 
-- batch B files checkpointed: **5,152 / 40,798**
-- annotated OK: **1,106**; error labels 2,690; mean labels/annotated 2.4322;
-- single-model invariant: grok-4.7 (5,152) (provenance: fresh 5,150, reused-wave3 2 — reused-wave3 = the 16,991 grok-4.7 effort-low labels this same pipeline produced in wave3, copied to keep batch B one model without re-paying them).
+- batch B files checkpointed: **40,798 / 40,798**
+- annotated OK: **23,332**; error labels 58,314; mean labels/annotated 2.4993;
+- single-model invariant: grok-4.7 (40,798) (provenance: fresh 23,807, reused-wave3 16,991 — reused-wave3 = the 16,991 grok-4.7 effort-low labels this same pipeline produced in wave3, copied to keep batch B one model without re-paying them).
 
 **Cross-model agreement (same-hash OK-vs-OK pairs, batch A model vs the grok-4.7 batch-B label; per-trace normalized error-CATEGORY SETS):**
 
 | batch A model | batch B model | n overlap | mean Jaccard | exact set match | impact-share L1 | per-class Cohen κ (top) |
 |---|---|---|---|---|---|---|
-| glm-5.3-flash | grok-4.7 | 86 | 0.5499 | 0.3372 | 0.2023 | Instruction Non-compliance κ=-0.2669; Goal Deviation κ=-0.1351; Context Handling Failures κ=-0.4891; Language-only κ=-0.1304 |
-| nvidia/nemotron-3-ultra-550b-a55b | grok-4.7 | 405 | 0.4306 | 0.1951 | 0.1283 | Instruction Non-compliance κ=-0.2308; Goal Deviation κ=-0.3429; Context Handling Failures κ=-0.3108; Resource Abuse κ=-0.161; Task Orchestration κ=-0.0876 |
-| nvidia/nemotron-3-ultra-550b-a55b:free | grok-4.7 | 256 | 0.4214 | 0.1914 | 0.0722 | Instruction Non-compliance κ=-0.1398; Goal Deviation κ=-0.3509; Context Handling Failures κ=-0.2751; Resource Abuse κ=-0.1137; Task Orchestration κ=-0.187 |
+| glm-5.3-flash | grok-4.7 | 206 | 0.4517 | 0.2573 | 0.4189 | Instruction Non-compliance κ=-0.3429; Goal Deviation κ=-0.1613; Tool Output Misinterpretation κ=-0.3947; Formatting Errors κ=-0.2322; Language-only κ=-0.5363 |
+| nvidia/nemotron-3-ultra-550b-a55b | grok-4.7 | 8,500 | 0.3213 | 0.1449 | 0.0802 | Instruction Non-compliance κ=-0.3183; Tool Output Misinterpretation κ=-0.3671; Formatting Errors κ=-0.3041; Language-only κ=-0.2437; Goal Deviation κ=-0.4114 |
+| nvidia/nemotron-3-ultra-550b-a55b:free | grok-4.7 | 1,770 | 0.3581 | 0.1667 | 0.0479 | Instruction Non-compliance κ=-0.2648; Goal Deviation κ=-0.3683; Tool Output Misinterpretation κ=-0.4218; Formatting Errors κ=-0.3638; Resource Abuse κ=-0.3802 |
 
 Interpretation: exact-set match and mean Jaccard quantify how reproducible TRAIL annotation is ACROSS frontier models at temperature 0 — the instrument's cross-model ceiling. The glm-5.3-flash row is the headline pair (batch A glm labels vs batch B grok labels); the ultra rows use the larger nvidia overlap as corroboration.
 
+**Sensitivity at full N:** STILL UNSTABLE AT FULL N: 5/5 top-5 class shares and 3/3 impact shares at C fall OUTSIDE D's bootstrap 95% CI.** Numbers: L1(C,D)=0.4898 vs L1(B,C)=0.0861; max|class drift C->D|=0.1013; max|impact drift C->D|=0.1378; top-10 Jaccard(C,D)=0.818; chi-square C-vs-D p=2.874e-185. Instrument note: B/C were glm-5.3-flash-dominated mixes at N=1.1k; D is a single-model (grok-4.7) full-N instrument (n_ok=23332), so C->D drift mixes selection-with-N with annotator-model change. The same-hash cross-model agreement statistic (batchb_agreement.json: glm-5.3-flash vs grok-4.7, mean per-trace category-set Jaccard=0.4517, exact-set-match=0.2573, n=206) bounds how much of the C->D move is annotator-model rather than selection: at this agreement level, a large L1(C,D) cannot be attributed to sampling noise alone. Full-N point (D) analysis appended to `fullrun/sensitivity.md`; numbers in `work/fullrun/sensitivity_d.json`.
 
 ### Annotator batches (single-model per batch; 2026-10-19/20 slices were position mod 4, 2026-10-21 finish sweep shards are sha256 mod 16)
 
 | model (provider) | files checkpointed | annotated OK |
 |---|---|---|
-| grok-4.7 | 16,991 | 12,370 |
-| nvidia/nemotron-3-ultra-550b-a55b | 13,558 | 9,571 |
-| nvidia/nemotron-3-ultra-550b-a55b:free | 4,066 | 2,121 |
-| nvidia/nemotron-3-super-120b-a12b | 1,837 | 194 |
-| nvidia/nemotron-3.5-lightning:free | 1,506 | 198 |
-| nvidia/nemotron-3.5-lightning-30b-a3b | 1,342 | 86 |
-| glm-5.3-flash | 813 | 235 |
-| gemini-3.5-flash | 684 | 11 |
+| grok-4.7 | 16,979 | 12,366 |
+| nvidia/nemotron-3-ultra-550b-a55b | 13,543 | 9,567 |
+| nvidia/nemotron-3-ultra-550b-a55b:free | 4,060 | 2,119 |
+| nvidia/nemotron-3-super-120b-a12b | 1,833 | 194 |
+| nvidia/nemotron-3.5-lightning:free | 1,496 | 198 |
+| nvidia/nemotron-3.5-lightning-30b-a3b | 1,339 | 86 |
+| glm-5.3-flash | 806 | 235 |
+| gemini-3.5-flash | 682 | 11 |
 | grok-4.7-build-fast | 1 | 1 |
 
 Batch-to-slice assignment and per-file model ids live in each label checkpoint
@@ -154,30 +155,30 @@ sustained load. Quality floor respected everywhere (current-gen models only;
 kimi-k2.6 404s and deepseek-v4.1-flash times out on NIM today — excluded, probe
 receipts in the run logs).
 
-### Corpus-wide failure-class distribution (over 24,787 annotated sessions)
+### Corpus-wide failure-class distribution (over 24,777 annotated sessions)
 
 | error class (TRAIL taxonomy) | labels | traces | % of annotated traces |
 |---|---|---|---|
-| Tool Output Misinterpretation | 6718 | 6164 | 24.9% |
-| Formatting Errors | 5993 | 5100 | 20.6% |
-| Instruction Non-compliance | 5986 | 5811 | 23.4% |
-| Language-only | 4602 | 4151 | 16.7% |
+| Tool Output Misinterpretation | 6713 | 6160 | 24.9% |
+| Formatting Errors | 5990 | 5097 | 20.6% |
+| Instruction Non-compliance | 5982 | 5807 | 23.4% |
+| Language-only | 4601 | 4150 | 16.7% |
 | Environment Setup Errors | 3595 | 3281 | 13.2% |
-| Goal Deviation | 3527 | 3521 | 14.2% |
-| Poor Information Retrieval | 3397 | 3263 | 13.2% |
-| Resource Abuse | 2949 | 2931 | 11.8% |
-| Context Handling Failures | 2598 | 2580 | 10.4% |
+| Goal Deviation | 3519 | 3513 | 14.2% |
+| Poor Information Retrieval | 3396 | 3262 | 13.2% |
+| Resource Abuse | 2942 | 2924 | 11.8% |
+| Context Handling Failures | 2587 | 2571 | 10.4% |
 | Tool Selection Errors | 2562 | 2476 | 10.0% |
 | Timeout Issues | 2229 | 2061 | 8.3% |
-| Incorrect Problem Identification | 1749 | 1729 | 7.0% |
+| Incorrect Problem Identification | 1747 | 1727 | 7.0% |
 | Resource Not Found | 1560 | 1381 | 5.6% |
 | Rate Limiting | 1408 | 1353 | 5.5% |
 | Tool-related | 1162 | 1133 | 4.6% |
 | Authentication Errors | 1162 | 1025 | 4.1% |
-| Task Orchestration | 1128 | 1124 | 4.5% |
+| Task Orchestration | 1125 | 1121 | 4.5% |
 | Tool Definition Issues | 1080 | 966 | 3.9% |
 | Service Errors | 946 | 841 | 3.4% |
-| Resource Exhaustion | 651 | 628 | 2.5% |
+| Resource Exhaustion | 650 | 627 | 2.5% |
 | hallucinations | 15 | 15 | 0.1% |
 | configuration | 2 | 2 | 0.0% |
 | hallucinations > language-only | 1 | 1 | 0.0% |
@@ -185,20 +186,20 @@ receipts in the run logs).
 | language-only hallucinations | 1 | 1 | 0.0% |
 | hallucinations - tool-related (fabricating tool outputs/capabilities) | 1 | 1 | 0.0% |
 
-By root class: | Reasoning Errors | 32169 | 58.5% |
-| System Execution Errors | 12631 | 23.0% |
-| Planning and Coordination Errors | 10202 | 18.5% |
+By root class: | Reasoning Errors | 32153 | 58.5% |
+| System Execution Errors | 12630 | 23.0% |
+| Planning and Coordination Errors | 10173 | 18.5% |
 
-Impact: | MEDIUM | 24097 | 43.8% |
-| HIGH | 21397 | 38.9% |
+Impact: | MEDIUM | 24077 | 43.8% |
+| HIGH | 21371 | 38.9% |
 | LOW | 9524 | 17.3% |
 | CRITICAL | 5 | 0.0% |
 
 | sweep status | files |
 |---|---|
-| ok | 24,787 |
-| not_a_session | 15,849 |
-| unparseable_response | 161 |
+| ok | 24,777 |
+| not_a_session | 15,801 |
+| unparseable_response | 160 |
 | gone | 1 |
 
 Rubric means (0–5) over annotated sessions:
@@ -208,24 +209,24 @@ instruction_adherence 3.63 ·
 plan_optimization 3.34 ·
 overall 3.82.
 Mean error labels/session 2.22;
-sessions with ≥1 error 19,707 / 24,787.
+sessions with ≥1 error 19,698 / 24,777.
 
 ### Per-runtime coverage (unique-file basis; duplicates inherit their hash)
 
 | runtime | processed | eligible (census) | annotated OK | error labels |
 |---|---|---|---|---|
-| claude-code-free | 18,542 | 16,288 | 16,209 | 30,980 |
-| agent-sessions-vault | 13,530 | 3,614 | 3,592 | 9,235 |
+| claude-code-free | 18,534 | 16,288 | 16,209 | 30,980 |
+| agent-sessions-vault | 13,510 | 3,614 | 3,587 | 9,212 |
 | codex | 2,617 | 2,608 | 2,582 | 6,883 |
 | vm-backup | 2,458 | 1,389 | 1,385 | 4,476 |
 | cursor-chats | 1,090 | 0 | 0 | 0 |
 | other:vscode | 889 | 0 | 0 | 0 |
-| zcode-rollout | 530 | 503 | 487 | 1,937 |
-| grok | 505 | 480 | 465 | 1,305 |
+| zcode-rollout | 524 | 503 | 484 | 1,922 |
+| grok | 503 | 480 | 463 | 1,297 |
 | gemini-cli | 197 | 1 | 1 | 0 |
 | other:pplx | 148 | 0 | 0 | 0 |
-| other:agents | 81 | 0 | 0 | 0 |
-| zcode-workspace | 43 | 24 | 24 | 71 |
+| other:agents | 70 | 0 | 0 | 0 |
+| zcode-workspace | 36 | 24 | 24 | 71 |
 | other:quokka | 30 | 0 | 0 | 0 |
 | ai-exports | 28 | 18 | 18 | 67 |
 | codex-archived | 19 | 19 | 19 | 40 |
@@ -233,22 +234,20 @@ sessions with ≥1 error 19,707 / 24,787.
 | cline | 18 | 5 | 5 | 29 |
 | other:mypy_cache | 8 | 0 | 0 | 0 |
 | claude-desktop-code-sessions | 8 | 0 | 0 | 0 |
-| other:beads | 7 | 0 | 0 | 0 |
+| other:beads | 6 | 0 | 0 | 0 |
 | other:config | 4 | 0 | 0 | 0 |
 | codex-root-state | 4 | 0 | 0 | 0 |
 | other:scratch | 4 | 0 | 0 | 0 |
 | skills-claude-web | 2 | 0 | 0 | 0 |
 | claude-desktop-agent-mode | 2 | 0 | 0 | 0 |
-| grok-desktop | 2 | 0 | 0 | 0 |
-| claude-desktop-indexeddb | 2 | 0 | 0 | 0 |
 | other:hypothesis | 2 | 0 | 0 | 0 |
 | cursor-acp | 2 | 0 | 0 | 0 |
 | other:crcp | 1 | 0 | 0 | 0 |
 | other:edge-automation | 1 | 0 | 0 | 0 |
 | other:claude-server-commander | 1 | 0 | 0 | 0 |
+| claude-desktop-indexeddb | 1 | 0 | 0 | 0 |
 | other:qlty | 1 | 0 | 0 | 0 |
 | vscode-globalstorage | 1 | 0 | 0 | 0 |
-| claude-desktop-localstorage | 1 | 0 | 0 | 0 |
 | copilot | 1 | 0 | 0 | 0 |
 | other:fiddler | 1 | 0 | 0 | 0 |
 
@@ -259,29 +258,29 @@ the FULL annotated canonical corpus (all figures from
 `corpus2_summary.json`, recomputed independently by `verify_fullrun.py`):
 
 1. **Reasoning failures, not infrastructure, dominate.** Reasoning-root errors
-   account for 58% of all error labels;
+   account for 59% of all error labels;
    System Execution (the "infra" root) only 23%.
    A long-horizon harness that survives at all rarely dies of the platform —
    it bleeds out through the model's own instruction drift.
 2. **Tool-output misreading is the #1 failure class in real harness use.**
-   Tool Output Misinterpretation leads with 6,718 labels /
-   6,164 traces
+   Tool Output Misinterpretation leads with 6,713 labels /
+   6,160 traces
    (24.9%
    of annotated sessions), with Formatting Errors
-   (5,993 labels) and Instruction
-   Non-compliance (5,986 labels,
+   (5,990 labels) and Instruction
+   Non-compliance (5,982 labels,
    23.4%
    of traces) close behind — the paper's curated GAIA gold skews Formatting +
    Instruction Non-compliance (42% of gold errors), but day-to-day single-user
    sessions break FIRST on the model misreading what its tools returned.
 3. **High-impact share is larger than in the paper's curated traces.**
-   HIGH impact = 21397 of 55023 labels (39%).
+   HIGH impact = 21371 of 54977 labels (39%).
    Real single-user sessions interleave one-off scripts with production tasks;
    when they break, the break matters.
 4. **~80% of annotated sessions carry ≥1 failure label**
-   (19,707 of 24,787); mean 2.22 labels per annotated session.
+   (19,698 of 24,777); mean 2.22 labels per annotated session.
 5. **Context Handling Failures rank high in long-horizon reality**
-   (2598 labels) — the class
+   (2587 labels) — the class
    the paper found nearly unpredictable for models (F1 ≈ 0 in their Table) is a
    live failure mode in day-to-day harness use.
 
@@ -333,8 +332,8 @@ bash work/fullrun/batchb_launch.sh   # wraps: python fullrun_batchb_grok.py --wo
 | gold glm-5.3 | 39 | 984,942 | 252,535 |
 | gold nemotron-3-ultra | 148 | 4,421,809 | 440,332 |
 | corpus (all volume models) | 27696 | 426,842,987 | 82,756,239 |
-| batch B (grok-4.7 fresh calls only; reused-wave3 labels cost 0 new tokens) | 1143 | 11,168,296 | 2,488,066 |
-| **total** | 29026 | **443,418,034** | **85,937,172** |
+| batch B (grok-4.7 fresh calls only; reused-wave3 labels cost 0 new tokens) | 10978 | 174,289,221 | 31,094,003 |
+| **total** | 38861 | **606,538,959** | **114,543,109** |
 
 Provider claims recorded atomically in `tss/tsis-deepdive/provider-claims.json`.
 Gemini lane: GEMINI_API_KEY rejected (400 invalid key, live probe this session) —

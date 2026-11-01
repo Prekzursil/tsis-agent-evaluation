@@ -10,7 +10,7 @@ Course project for **TSIS (Topici Speciale în Inginerie Software)**, FMI Master
 |------|-------|---------|-----------|
 | **τ²-bench** (winner) | [arXiv:2506.07982](https://arxiv.org/abs/2506.07982) | **GO** | 2,852-sim grok-4.7 + 2,344-sim GLM-5.3 full-domain sweep; custom 14-task e-commerce domain (mean 0.786); upstream docs errata filed as [issue #635](https://github.com/sierra-research/tau2-bench/issues/635) |
 | MASTscope (supporting) | [arXiv:2503.13657](https://arxiv.org/abs/2503.13657) | NO-GO (solo) | 33,889-session MAST-14 annotation (100% of dedup corpus); AdaMAST self-rejected (κ=0.315) |
-| TRAIL (supporting) | [arXiv:2505.08638](https://arxiv.org/abs/2505.08638) | NO-GO (solo) | 148/148 gold-set agreement (wF1 0.368); 7,011-session corpus annotation; sensitivity verdict: classes STABLE, severity INCONCLUSIVE |
+| TRAIL (supporting) | [arXiv:2505.08638](https://arxiv.org/abs/2505.08638) | NO-GO (solo) | 148/148 gold-set agreement (wF1 0.368); 7,011-session corpus annotation; sensitivity verdict at full N (2026-11-01): **STILL UNSTABLE** — 5/5 top-5 class + 3/3 impact shares outside the full-N bootstrap CI (`trail/fullrun/sensitivity.md`) |
 
 ## Key artifacts
 
