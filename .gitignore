@@ -85,6 +85,10 @@ _audit/**/__pycache__/
 !.gitleaks.toml
 !tests/
 !tests/**
+!AGENTS.md
+!CODE_OF_CONDUCT.md
+!/scripts/
+!/scripts/verify
 
 # ── lane scripts referenced by the committed reports ──
 !tau2-bench/summarize_grok.py
