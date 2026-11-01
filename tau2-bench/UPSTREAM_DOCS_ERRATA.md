@@ -62,7 +62,8 @@ base tasks, not all.
 - **Reported upstream (2026-10-18): https://github.com/sierra-research/tau2-bench/issues/635**
   — "docs: evaluation.md reward_basis claims contradict the shipped v1.0.1
   task data (retail/telecom), and ACTION is used in telecom", filed
-  2026-10-18T00:41:46Z under the user's account (Prekzursil), covering both
+  2026-10-18T00:41:46Z under the user's account (<os-user> — masked 2026-10-31, privacy
+  pass; the GitHub account name is on the linked issue itself), covering both
   errata with the same counts/lines/commit (96a3ef9). State OPEN, 0 comments
   as of this session (`gh issue view 635 --repo sierra-research/tau2-bench`).
 - Reinstall check (round 2): `git fetch origin` → up to date; `origin/main`

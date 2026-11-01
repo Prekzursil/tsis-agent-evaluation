@@ -212,7 +212,7 @@ caches, `D:\verdict-archive` (web crawl).
 ## 8. Keeping the corpus current (re-run instructions)
 
 ```cmd
-cd C:\Users\Prekzursil\.zcode\workspace\default\tsis\agent-evaluation\corpus
+cd C:\Users\<os-user>\.zcode\workspace\default\tsis\agent-evaluation\corpus
 python build_corpus.py --update                      # warm re-scan (~5-10 min)
 python build_corpus.py --update --parse-budget-gb 0  # unlimited: fills deferred parses
 python build_corpus.py --roots "codex"               # touch a subset only

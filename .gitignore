@@ -6,6 +6,7 @@
 !INTEGRITY.md
 !AI_USAGE.md
 !README.md
+!HARNESS_INSIGHTS.md
 !.gitignore
 
 # ── Corpus: docs + scripts (not bulk data) ──
@@ -101,6 +102,7 @@ _audit/**/__pycache__/
 !trail/fullrun_finish_shard.py
 !trail/fullrun_results_md.py
 !trail/fullrun_hier_judge.py
+!trail/fullrun_hierarchical_judge.md
 !trail/fullrun_hier_score.py
 !trail/fullrun_hier_flatctl.py
 !trail/_hier_chunk_stats.py
