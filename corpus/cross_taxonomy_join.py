@@ -156,28 +156,32 @@ def bh_fdr(pvals):
 def main():
     # ---------- load + verify provenance ----------
     manifest_sha = set()
-    for line in open(MANIFEST, encoding="utf-8"):
-        manifest_sha.add(json.loads(line)["sha256"])
-    canon = json.load(open(CANONICAL, encoding="utf-8"))
+    with open(MANIFEST, encoding="utf-8") as fh:
+        for line in fh:
+            manifest_sha.add(json.loads(line)["sha256"])
+    with open(CANONICAL, encoding="utf-8") as fh:
+        canon = json.load(fh)
     canon_sha = set(e["sha256"] for e in canon["annotation_set"])
 
     mast = collections.defaultdict(list)
     n_mast_rows = n_mast_ok_rows = 0
-    for line in open(MAST_LABELS, encoding="utf-8"):
-        line = line.strip()
-        if not line:
-            continue
-        d = json.loads(line)
-        n_mast_rows += 1
-        if d.get("ok"):
-            n_mast_ok_rows += 1
-            mast[d["sha256"]].append(d)
+    with open(MAST_LABELS, encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            d = json.loads(line)
+            n_mast_rows += 1
+            if d.get("ok"):
+                n_mast_ok_rows += 1
+                mast[d["sha256"]].append(d)
 
     trail = {}
     trail_status = collections.Counter()
     norm_log = collections.Counter()
     for fp in glob.glob(f"{TRAIL_DIR}/*.json"):
-        d = json.load(open(fp, encoding="utf-8"))
+        with open(fp, encoding="utf-8") as fh:
+            d = json.load(fh)
         trail_status[d["status"]] += 1
         if d["status"] != "ok":
             continue
@@ -211,12 +215,13 @@ def main():
     }
     # decompose trail_ok \ mast_ok
     mast_any_row = collections.defaultdict(list)
-    for line in open(MAST_LABELS, encoding="utf-8"):
-        line = line.strip()
-        if not line:
-            continue
-        d = json.loads(line)
-        mast_any_row[d["sha256"]].append(d.get("ok"))
+    with open(MAST_LABELS, encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            d = json.loads(line)
+            mast_any_row[d["sha256"]].append(d.get("ok"))
     tnm = [h for h in trail if h not in mast]
     diag["trail_ok_not_mast_ok__was_mast_target_parsefail"] = sum(
         1 for h in tnm if h in mast_any_row
@@ -271,7 +276,7 @@ def main():
         else 1.0
     )
     kappa = (po - pe) / (1 - pe) if pe < 1 else float("nan")
-    phi = math.sqrt(chi2 / N) if chi2 == chi2 and N else float("nan")
+    phi = math.sqrt(chi2 / N) if not math.isnan(chi2) and N else float("nan")
 
     agreement = {
         "n": N,
@@ -499,17 +504,18 @@ def main():
     full_mode_yes = collections.Counter()
     n_full = 0
     seen = set()
-    for line in open(MAST_LABELS, encoding="utf-8"):
-        line = line.strip()
-        if not line:
-            continue
-        d = json.loads(line)
-        if d.get("ok") and d["sha256"] not in seen:
-            seen.add(d["sha256"])
-            n_full += 1
-            for m, v in d["modes"].items():
-                if v:
-                    full_mode_yes[m] += 1
+    with open(MAST_LABELS, encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            d = json.loads(line)
+            if d.get("ok") and d["sha256"] not in seen:
+                seen.add(d["sha256"])
+                n_full += 1
+                for m, v in d["modes"].items():
+                    if v:
+                        full_mode_yes[m] += 1
     selection = {
         m: {
             "join_rate": mode_yes[m] / N if N else 0.0,
