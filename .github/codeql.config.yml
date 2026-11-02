@@ -14,3 +14,6 @@ paths-ignore:
   - _audit/**
   - repo/**
   - work/**
+  # frozen lane driver, same rationale as the pyright/coverage excludes in
+  # pyproject.toml; its --roots CLI arg is the operator's own path by design
+  - corpus/build_corpus.py
