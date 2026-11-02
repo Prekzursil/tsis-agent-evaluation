@@ -264,8 +264,10 @@ weighted F1 **0.3683**, location acc **0.2472**, joint acc **0.0905** (GAIA 0.36
 0.1145; SWE 0.3057/0.0086/0.0000); single-model glm-5.3 (33): 0.3953 / **0.4419** / 0.1251;
 nemotron-ultra (147): 0.3537 / **0.2064** / 0.0709 — the two single-model batches differ by
 2.1× on location accuracy, the lane's own annotator-noise floor the council cites. Corpus
-distribution: Tool Output Misinterpretation #1 (6,718 labels, 24.9% of traces), Formatting
-5,993, Instruction Non-compliance 5,986 (23.4%); by root Reasoning 58.5% / System Execution
+distribution: Tool Output Misinterpretation #1 (6,713 labels, 24.9% of traces), Formatting
+5,990, Instruction Non-compliance 5,982 (23.4% — post-quarantine figures, trail/RESULTS.md:160-166;
+the council's 2026-10-30 quotes were 6,718/5,993/5,986, superseded by the 2026-10-31
+59-label quarantine per INTEGRITY.md §5b.2); by root Reasoning 58.5% / System Execution
 23.0% / Planning 18.5%; HIGH impact 38.9%; 79.5% of sessions carry ≥1 label; mean 2.22
 labels/session (RESULTS.md:137-191). Repo-scorer crosscheck bit-exact ≤1e-9 PASS
 (RESULTS.md:42-43).
