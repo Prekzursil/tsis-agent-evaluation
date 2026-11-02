@@ -605,12 +605,18 @@ add_text(
     para("Read the table with its confound", size=14.5, bold=True, color=ACC_DEEP),
 )
 yy = 3.95
-for txt in [
+_b_confound = (
     "Rows mix two harness versions (v1.0.1 vs v2.0.0) - the confound is admitted in the "
-    "source file and banned by our Condition 3: one version per comparison, ever.",
+    "source file and banned by our Condition 3: one version per comparison, ever."
+)
+_b_custom = (
     "The custom-domain row is the team's own rule set (momentstudio-derived): ecommerce2 "
     "on v1.0.1, its v2.0.0 port ecommerce3 - grok clears every coupon/VAT family GLM "
-    "dropped, 0.5714 to 0.7857.",
+    "dropped, 0.5714 to 0.7857."
+)
+for txt in [
+    _b_confound,
+    _b_custom,
     "Same-version cross-model rerun with bootstrap CIs lands in weeks 3-4 (WP1).",
 ]:
     yy += bullet(s, 8.15, yy, 4.35, txt, size=11, ls=1.14, hh=0) + 0.14
@@ -696,10 +702,13 @@ kv_rows(
 rect(s, 7.85, 3.55, 4.93, 2.9, CARD, radius=0.05)
 add_text(s, 8.15, 3.77, 4.35, 0.3, para("Why it matters", size=14.5, bold=True, color=PRIMARY))
 yy = 4.2
+_b_semantic = (
+    "Sierra shipped a semantic scorer in v2.0.0 - our A/B quantifies what that fix was worth "
+    "(WP4, on the v2.0.0 flag)."
+)
 for txt in [
     "A benchmark that fails correct agents on phrasing measures the evaluator, not the agent.",
-    "Sierra shipped a semantic scorer in v2.0.0 - our A/B quantifies what that fix was worth "
-    "(WP4, on the v2.0.0 flag).",
+    _b_semantic,
     "Demo beat: this slide plus slides 6-7 run fully offline - no key needed at defense time.",
 ]:
     yy += bullet(s, 8.15, yy, 4.35, txt, size=11.5, ls=1.15, hh=0) + 0.15
@@ -863,7 +872,6 @@ for ri, row in enumerate(rows):
                 align=PP_ALIGN.LEFT if ci < 2 else PP_ALIGN.CENTER,
             )
         else:
-            is_ctrl = ri == 2
             is_hier = ri == 3
             set_cell(
                 c,
@@ -1242,13 +1250,22 @@ add_text(
     para("Automatic solvability verification", size=14.5, bold=True, color=PRIMARY),
 )
 yy = 4.55
-for txt in [
+_b_solvable = (
     "Every generated task must pass broken-before / fixed-after / no-prefix-fix checks "
-    "(the harness's own pattern at telecom manager.py:197) before it enters the set.",
+    "(the harness's own pattern at telecom manager.py:197) before it enters the set."
+)
+_b_fullcheck = (
     "Then the full harness validation - the 32-check precedent already proven on the "
-    "inherited custom domain - gates the >= 100-task deliverable.",
+    "inherited custom domain - gates the >= 100-task deliverable."
+)
+_b_datebug = (
     "Fixes an authoring bug we inherited: the current-date anchor (RESULTS.md:62) is "
-    "pinned by generated fixtures.",
+    "pinned by generated fixtures."
+)
+for txt in [
+    _b_solvable,
+    _b_fullcheck,
+    _b_datebug,
 ]:
     yy += bullet(s, M + 0.3, yy, 6.5, txt, size=12, ls=1.15, hh=0) + 0.16
 rect(s, 7.85, 3.95, 4.93, 2.5, ACC_TINT, radius=0.05)
@@ -1387,13 +1404,22 @@ add_text(
     para("Two instruments, two monopolies", size=14.5, bold=True, color=PRIMARY),
 )
 yy = 4.15
-for txt in [
+_b_infra = (
     "TRAIL monopolizes infrastructure classes (provider failures, resource exhaustion) - "
-    "MAST's modes do not model them.",
+    "MAST's modes do not model them."
+)
+_b_process = (
     "MAST monopolizes process pathology (step repetition, premature termination) - "
-    "TRAIL's classes under-represent loops.",
+    "TRAIL's classes under-represent loops."
+)
+_b_rankings = (
     "So neither taxonomy subsumes the other; quoting rankings (not rates) is the honest "
-    "cross-examination (Condition 12).",
+    "cross-examination (Condition 12)."
+)
+for txt in [
+    _b_infra,
+    _b_process,
+    _b_rankings,
 ]:
     yy += bullet(s, 7.1, yy, 5.38, txt, size=12, ls=1.15, hh=0) + 0.15
 notes(
@@ -1456,13 +1482,22 @@ add_text(
     s, M + 0.3, 3.62, 5.38, 0.3, para("Two failure regimes", size=14.5, bold=True, color=PRIMARY)
 )
 yy = 4.02
-for txt in [
+_b_interactive = (
     "Interactive Claude lane: 71% completion at the fleet's lowest error density "
-    "(1.91 labels/session).",
+    "(1.91 labels/session)."
+)
+_b_loopregime = (
     "Vault / rollout / automation lanes: 0-42% completion with Step Repetition at "
-    "72.6-91.7% - the loop regime.",
+    "72.6-91.7% - the loop regime."
+)
+_b_rootcause = (
     "Root cause shares: Reasoning 58.5% vs System Execution 23.0% of TRAIL labels; "
-    "HIGH impact 38.9%.",
+    "HIGH impact 38.9%."
+)
+for txt in [
+    _b_interactive,
+    _b_loopregime,
+    _b_rootcause,
 ]:
     yy += bullet(s, M + 0.3, yy, 5.38, txt, size=12, ls=1.15, hh=0) + 0.16
 rect(s, 6.8, 3.42, 5.98, 3.0, CARD, radius=0.05)
@@ -1832,13 +1867,22 @@ add_text(
 rect(s, 6.8, 1.85, 5.98, 2.2, CARD, radius=0.05)
 add_text(s, 7.1, 2.05, 5.38, 0.3, para("Framing discipline", size=14.5, bold=True, color=PRIMARY))
 yy = 2.45
-for txt in [
+_b_nokey = (
     "No funded frontier key exists today (all five provider keys failed auth probes) - "
-    "so every reproduction claim stays MODEL-SUBSTITUTED until one appears.",
+    "so every reproduction claim stays MODEL-SUBSTITUTED until one appears."
+)
+_b_dryrun = (
     "Every judge / user-sim call is priced with --dry-run before committing (the "
-    "flat-control path measured 42.5K tokens/trace).",
+    "flat-control path measured 42.5K tokens/trace)."
+)
+_b_pricemap = (
     "Litellm has no price map for glm-5.3 / grok-4.7 on our endpoints: cost is not "
-    "persisted, tokens are measured and reported instead.",
+    "persisted, tokens are measured and reported instead."
+)
+for txt in [
+    _b_nokey,
+    _b_dryrun,
+    _b_pricemap,
 ]:
     yy += bullet(s, 7.1, yy, 5.38, txt, size=11.5, ls=1.15, hh=0) + 0.13
 rect(s, M, 4.25, CW, 2.2, CARD, radius=0.05)
@@ -1851,15 +1895,24 @@ add_text(
     para("Provenance pack - exists before week 3", size=14.5, bold=True, color=PRIMARY),
 )
 yy = 4.85
-for txt in [
+_b_aiusage = (
     "AI_USAGE.md per the lab standard: full AI-involvement inventory for every asset "
-    "(harness runs, dossiers, this deck).",
+    "(harness runs, dossiers, this deck)."
+)
+_b_disclose = (
     "Disclosure: custom e-commerce VAT/coupon rules derive from the team's own "
     "momentstudio codebase - inherited estate, scoped TEAM-new vs inherited for the "
-    "professor (Condition 7).",
+    "professor (Condition 7)."
+)
+_b_scrub = (
     "Hygiene: the 35 lane files embedding the OS username are scrubbed before any repo "
     "sharing, and the verify gate re-runs GREEN at submission - no stale artifacts "
-    "(Condition 9).",
+    "(Condition 9)."
+)
+for txt in [
+    _b_aiusage,
+    _b_disclose,
+    _b_scrub,
 ]:
     yy += bullet(s, M + 0.3, yy, CW - 0.6, txt, size=12, ls=1.15, hh=0) + 0.14
 notes(
