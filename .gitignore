@@ -112,3 +112,9 @@ _audit/**/__pycache__/
 # ── never: lane internals, keys, results data ──
 # (provider-claims.json, work/, .venv, repo/ upstream clone, results dirs,
 #  annotation/try_env_keys.py stay untracked by the blanket '*' rule above)
+
+# ── TSIS 3-in-1 presentation deck (builder + audit + built artifact) ──
+!presentation/
+!presentation/**
+# … but never bytecode caches
+presentation/**/__pycache__/
