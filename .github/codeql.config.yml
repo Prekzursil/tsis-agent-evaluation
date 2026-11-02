@@ -1,0 +1,16 @@
+name: "TSIS CodeQL analysis scope"
+# Frozen research lane artifacts — the same documented exclusion rationale as
+# pyproject.toml's ruff/basedpyright/format excludes and [tool.coverage] omit
+# (see CONTRIBUTING.md): tau2-bench/, trail/, mastscope/ and _audit/ are lane
+# drivers coupled to the uncommitted tau2-bench harness clone, private result
+# data, and LLM API lanes. They are reproduced by re-running lanes, never
+# edited, so analyzer findings on them are not actionable without violating
+# the freeze. The measured surface (corpus/, tests/, presentation/ and all
+# workflow code) stays fully analyzed — that is where findings get fixed.
+paths-ignore:
+  - tau2-bench/**
+  - trail/**
+  - mastscope/**
+  - _audit/**
+  - repo/**
+  - work/**
