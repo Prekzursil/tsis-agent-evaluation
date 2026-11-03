@@ -1,5 +1,19 @@
 name: CodeQL
 
+# Fleet CODEQL DECISION (advanced configuration): this repo runs its OWN
+# CodeQL workflow with BOTH query suites -- security-extended AND
+# security-and-quality (strictly subsumes the default suite and the
+# security-extended suite) -- as a per-language matrix. Each language lane
+# uploads its SARIF to code scanning under a per-language category.
+# Replaces the quality-zero-platform reusable wrapper call, which hard-coded
+# `queries: security-and-quality` (security-extended was missing).
+# The documented frozen-lane-artifact exclusions in .github/codeql.config.yml
+# (tau2-bench/, trail/, mastscope/, _audit/, corpus/build_corpus.py -- frozen
+# research outputs, same rationale as pyproject.toml's lint/coverage excludes)
+# are preserved via config-file; the measured surface stays fully analyzed.
+# The repo's own test/coverage suite stays wired beside this in ci.yml /
+# quality.yml and is unchanged.
+
 permissions:
   actions: read
   contents: read
@@ -7,9 +21,9 @@ permissions:
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
-    branches: [main, master]
+    branches: [main]
   merge_group:
     types: [checks_requested]
   schedule:
@@ -17,16 +31,36 @@ on:
   workflow_dispatch:
 
 jobs:
-  codeql:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ${{ matrix.runs-on }}
     permissions:
       actions: read
       contents: read
       security-events: write
-    uses: Prekzursil/quality-zero-platform/.github/workflows/reusable-codeql.yml@d441b32790c4aa10e1f209539ec0ddc25114968b
-    with:
-      repo_slug: ${{ github.repository }}
-      event_name: ${{ github.event_name }}
-      sha: ${{ github.event.pull_request.head.sha || github.sha }}
-      codeql_config_file: .github/codeql.config.yml
-      platform_repository: Prekzursil/quality-zero-platform
-      platform_ref: main
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Languages this repo actually has: Python (Shell scripts are present
+          # but Shell is not a CodeQL-supported language).
+          - language: python
+            runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@1fc58d04a4d4374f921bdac573c3811c240f9c26 # v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+          queries: security-extended,security-and-quality
+          config-file: .github/codeql.config.yml
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@1fc58d04a4d4374f921bdac573c3811c240f9c26 # v4
+        with:
+          category: /language:${{ matrix.language }}
