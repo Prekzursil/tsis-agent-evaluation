@@ -116,7 +116,7 @@ dirs=5495; dup(task,trial)=0 everywhere: PASS`).
 | `results/` (GLM-5.3, sweep.py) | airline 200, banking_knowledge 388, ecommerce2 56, ecommerce_poc 52, mock 40, retail 456, telecom 456, telecom-workflow 456 | complete: 4 trials × tasks everywhere, 0 dup (task,trial), trials contiguous, `summary.json` present |
 | `results_v2_grok/` (grok-4.7) | airline 200, banking 388, ecommerce3 56, mock 40, retail 456, telecom 456, telecom-workflow 456, **intake 800** = 2,852 | complete, same invariants; `summary.json` + `RESULTS_section_draft.md` present |
 | `results_v2/` (GLM v2, partial) | airline 71, banking 52, ecommerce3 56, mock 40, retail 111, telecom 76 | interrupted but **resumable**: 0 dups, trials contiguous; no summary.json (never summarized) |
-| `results_secondmodel/` (pilot) | airline 77, ecommerce2 56 | partial pilot, resumable, no summary.json |
+| `results_secondmodel/` (pilot) | airline 77, ecommerce2 56 | partial pilot, resumable; the ecommerce2 leg is COMPLETE k=4 (mean_reward 0.7143, flat pass^k) — documented in `tau2-bench/RESULTS.md` §9. `pilot_summary.json` on disk is an early snapshot (airline at 4 sims), not a final summary |
 
 - **Every results JSON parses** — including `usage_*.json` in all dirs and the experiment
   dir `results_v2_grok/mock_allinfra_ledgerstorm_20261028/results.json`.
@@ -129,6 +129,18 @@ dirs=5495; dup(task,trial)=0 everywhere: PASS`).
 - **Checkpoints resumable**: per-domain `results.json` is the harness's own auto-resume
   checkpoint (sweep.py docstring, lines 14–18); (task,trial) unique and trials contiguous
   in all 4 dirs, so any partial dir can resume without collision.
+- **`results_secondmodel/` (nemotron pilot, 2026-10-21) now documented** — the run's
+  model pair, numbers and failure taxonomy previously existed only in untracked lane
+  artifacts (the blanket-`*` `.gitignore` matches every file in the dir:
+  `git check-ignore -v tau2-bench/results_secondmodel/pilot_summary.json` →
+  `.gitignore:2:*`); committed evidence was only `pilot_second_model.py` + the state
+  row above. Committed write-up added 2026-11-02: `tau2-bench/RESULTS.md` §9
+  (agent `openai/nvidia/nemotron-3-ultra-550b-a55b` × user `glm-5.3-flash`, harness
+  v1.0.1, seed 300, k=4; ecommerce2 complete 56/56, mean 0.7143, flat pass^k, 16/56
+  fails all communicate-substring with 0 failed action checks; airline checkpoint
+  77/200, never summarized). No measured number was changed — every §9 figure was
+  recomputed from `results_secondmodel/*/results.json` + `pilot_summary.json` at
+  write-up time.
 - `results_v2_grok/sweep_status.json` contains a historical `"mock": "failed: ValueError:
   Tasks were modified…"` string — a mid-run checkpoint note; mock itself is complete
   (40 sims, reconciles). Left as-is (checkpoint history, not data).

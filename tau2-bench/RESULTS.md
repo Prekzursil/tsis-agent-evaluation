@@ -187,3 +187,102 @@ litellm has no price map for `grok-4.7` on the bridge (`This model isn't mapped 
 - Final audit 04:21 (`python repair_grok_gaps.py`): all 8 domains OK — 2,852 sims, full k=4 coverage, 0 infrastructure_error, 0 duplicates.
 - Commands (exact): `repo/.venv/Scripts/python.exe probe_grok_xhigh.py --domains all --trials 4 --max-concurrency 8` (resumes); `repo/.venv/Scripts/python.exe summarize_grok.py`; `python build_usage_grok.py`; `python repair_grok_gaps.py`; `python verify_fullrun.py`.
 - 2026-10-30 04:3x, final verification: `python verify_fullrun.py > results_v2_grok/verify_fullrun_output.txt 2>&1` → **exit 0, 176 PASS / 0 FAIL, last line `VERIFY OK -- all checks passed`** (receipt: `results_v2_grok/verify_fullrun_output.txt`; covers BOTH the v1.0.1 GLM batch and the grok-4.7 v2.0.0 batch).
+
+## 9. Second-agent-model pilot: nemotron-3-ultra × glm-5.3-flash (2026-10-21) — ecommerce2 complete, airline partial
+
+This pilot predates the grok batch (§7) by a week and was the first attempt at a
+non-GLM agent model; the grok batch later became the full second-model batch, so this
+pilot survives as the **third distinct agent model** with evidence on the custom domain
+— the only third-model datapoint extending the §3/§7.3 "perfect action policy"
+cross-model finding.
+
+**Setup.** Same harness clone as §1 (v1.0.1 @ `96a3ef9`), same seeds (`seed=300`,
+`num_trials=4`, `max_steps=100`) and the user simulator **unchanged**
+(`openai/glm-5.3-flash`, ZAI coding endpoint) — only the agent under test is swapped:
+`openai/nvidia/nemotron-3-ultra-550b-a55b` on NVIDIA NIM
+(`https://integrate.api.nvidia.com/v1`, key from env `NVIDIA_API_KEY`). Per-trial
+seeds derive deterministically from `(config.seed, num_trials)` in `tau2.runner.batch`,
+so trial seeds are identical to the §1 sweep (producing script
+`pilot_second_model.py`, docstring lines 7–32; checkpoints under
+`results_secondmodel/<domain>/`). Ops deltas vs §1: `max_concurrency=3`, `timeout`
+raised 900→3600s (NIM 429 backoff inflates wall time; 0 sims ended at the 900s guard in
+the GLM baseline — all `user_stop` there), and the script wraps `completion` with an
+adaptive 20–120s backoff for NIM 429s (`fullrun/PILOT_PROGRESS.md`).
+
+### 9.1 ecommerce2 — COMPLETE k=4 (56 sims)
+
+14 tasks × 4 trials = **56 sims** (`results_secondmodel/ecommerce2/results.json`:
+`simulations` len 56, `agent_info.llm = openai/nvidia/nemotron-3-ultra-550b-a55b`,
+`user_info.llm = openai/glm-5.3-flash`, `environment_info.domain_name = ecommerce2`,
+`num_trials 4`, `seed 300`, run timestamp 2026-10-21T08:00:01). Terminations 56/56
+`user_stop`. Wall 7,849.0s (receipt `results_pilot_run.log:11861`:
+`[ecommerce2] done: {"n_sims": 56, "mean_reward": 0.7142857142857143, "wall_s": 7849.0}`).
+
+| Metric | Value | vs GLM-5.3 baseline (§1) |
+|---|---|---|
+| mean_reward | **0.7143** (40/56) | 0.7500 |
+| pass^1..pass^4 | **flat 0.7143** (10/14 tasks pass all trials; every failing task fails all 4) | 0.75 / 0.6667 / 0.6071 / 0.5714 |
+
+(Pilot values recomputed from the results JSON at write-up time and identical in
+`results_secondmodel/pilot_summary.json` → `second_model.ecommerce2`; the GLM column
+is §1's table, cross-checked against the same file's `side_by_side` entry.)
+
+**Failure taxonomy — same shape as §3 and §7.3.** 16/56 sims fail. Every one of the 16
+has ≥1 unmet COMMUNICATE-substring check and **0 failed action checks**; DB end-state
+matched in 15/16 (the single mismatch is `coupon_task_2` trial 2 — the same
+user-simulator-drift task glm-5.3 hit at trial 1, §3 Finding 1). The four failing tasks
+(each 0/4) and their required substrings:
+
+| Task (fails 4/4) | Required substring | Also dropped by GLM? (§3) |
+|---|---|---|
+| `cancel_task_1` | `confirmation email` | yes (4/4) |
+| `coupon_task_2` | `expired` | yes (1/4 — the date-anchor authoring bug, §3 Finding 3) |
+| `return_task_2` | `outside` | yes (4/4) |
+| `shipping_task_3` | `unable` | yes (1/4) |
+
+Cross-model conclusion: a **third** agent model with a perfect action policy against
+the store's rules on the custom domain — zero wrong writes/declines; the measured score
+is again dominated by the literal-substring `CommunicateEvaluator`. Note the
+generalization limit: nemotron (v1.0.1 harness, `ecommerce2`) sits between GLM 0.5714
+and grok-4.7 0.7857 (§7.2's ecommerce3, v2.0.0), but the grok row is the re-anchored
+domain port on a different harness version, so only the GLM↔nemotron pair is a
+same-domain, same-harness comparison.
+
+Usage (`results_secondmodel/usage_ecommerce2.json`): 539 calls — nemotron 326
+(1,191,994 prompt / 68,070 completion tokens), glm-5.3-flash 213 (177,237 / 44,700).
+litellm has no price map for either model on these endpoints, so cost is not reported
+rather than guessed.
+
+### 9.2 airline — PARTIAL (resumable checkpoint, never summarized)
+
+Target: the complete shipped airline domain (50 tasks, ids `"0".."49"`) × 4 = 200 sims.
+On-disk checkpoint: **77 sims** across all 50 tasks (27 tasks × 2 trials + 23 × 1;
+`results_secondmodel/airline/results.json`, last write 2026-10-21) — short of k=4
+coverage, so no domain-level metric is claimed here (the partial on-disk mean over the
+77 completed sims, 0.8571, is *not* comparable: trials are incomplete).
+`results_secondmodel/pilot_summary.json` is an **early snapshot**, taken when only 4
+airline sims existed (`second_model.airline`: n_sims 4, mean_reward 0.75, pass^1 0.75)
+— it is not a final summary. The dir resumes cleanly via the harness's auto-resume
+((task,trial) unique, trials contiguous — INTEGRITY.md §3 row).
+
+Ops receipts: 1-task smoke probes mean 0.0 then 1.0 (`results_pilot_smoke.log:219`,
+`results_pilot_smoke2.log:94`); main run `results_pilot_run.log` (ecommerce2 done +
+airline start), relaunches `results_pilot_run2.log` / `results_pilot_run3.log`;
+self-healing supervisor `pilot_supervisor.sh` last polled the checkpoint at 75/200 sims
+(2026-10-21 17:18, `results_pilot_supervisor.log`); run narrative in
+`fullrun/PILOT_PROGRESS.md` (incl. NIM-ultra contention from the sibling mastscope
+claim — probe 15 calls @3s → 10×200/5×429 — and the dead alternates probed that
+session: Gemini fallback 400 API_KEY_INVALID, NIM kimi-k2.6 / mistral-large-2 404).
+
+### 9.3 Verification status
+
+Unlike §1/§7 this pilot was never enrolled in `verify_fullrun.py` (that gate covers the
+v1.0.1 GLM batch and the grok v2.0.0 batch only). Every number above was recomputed
+directly from the results JSONs when this section was written (2026-11-02): sim counts
+by parsing `simulations`, mean by summation, pass^k by per-task all-trial aggregation,
+taxonomy by iterating `reward_info` of the 16 failing sims. Extending the offline gate
+to this pilot (and finishing airline to k=4) is TEAM-new work per DECISION.md §3.
+Provenance note: `results_secondmodel/` data, the run logs, `pilot_supervisor.sh` and
+`fullrun/PILOT_PROGRESS.md` are untracked lane artifacts under the blanket-`*`
+`.gitignore`; the committed evidence for this section is `pilot_second_model.py`
+(producing script) + this write-up.
